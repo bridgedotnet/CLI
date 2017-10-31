@@ -2,6 +2,22 @@
 
 A Command Line Interface for the [Bridge.NET](https://bridge.net) compiler.
 
+### Usage
+
+```
+bridge [runtime-options] [path-to-application]
+bridge [sdk-options] [command] [arguments] [command-options]
+```
+
+#### Example
+
+```
+bridge new                  // Create a new project
+bridge add package retyped  // Add retyped
+bridge Build                // Build the project
+bridge run                  // Run the project index.html
+```
+
 ### SDK Commands
 
 Command | Description
@@ -11,13 +27,6 @@ new &lt;template> | Initialize a new project based on the named Template. Defaul
 build | Builds the Bridge project.
 run | Compiles and immediately runs the index.html file.
 add package &lt;name> | Add a package from NuGet.org
-
-### Usage
-
-```
-bridge [runtime-options] [path-to-application]
-bridge [sdk-options] [command] [arguments] [command-options]
-```
 
 ### Common Options
 
