@@ -2,7 +2,7 @@
 
 A Command Line Interface for the [Bridge.NET](https://bridge.net) compiler.
 
-### Usage
+## Usage
 
 ```
 bridge [runtime-options] [path-to-application]
@@ -18,7 +18,7 @@ bridge Build                // Build the project
 bridge run                  // Run the project index.html
 ```
 
-### SDK Commands
+## SDK Commands
 
 Command | Description
 ---- | ----
@@ -28,14 +28,13 @@ build | Builds the Bridge project.
 run | Compiles and immediately runs the index.html file.
 add package &lt;name> | Add a package from NuGet.org
 
-### Common Options
+## Common Options
 
 Option | Description
 ---- | ----
 -h or --help | Show help.
--v or --version | Version of Bridge compiler.
 
-### Runtime Options
+## Runtime Options
 
 Option | Description
 ---- | ----
@@ -49,5 +48,6 @@ Option | Description
 -s --source &lt;file> | Source files name/pattern [default: *.cs].
 -f --folder &lt;path> | Builder working directory relative to current WD. [default: current wd]
 -R --recursive | Recursively search for .cs source files inside current working directory.
+-v or --version | Version of Bridge compiler.
 --norecursive | Non-recursive search of .cs source files inside current working directory.
 -notimestamp --notimestamp | Do not show timestamp in log messages. Default is to show timestamp.
