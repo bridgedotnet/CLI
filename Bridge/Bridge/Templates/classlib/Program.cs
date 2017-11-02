@@ -6,7 +6,8 @@ namespace Demo
     {
         public static void Main(string[] args)
         {
-            var msg = "Hello World!";            
+            var msg = "Hello World!";
+
             Console.WriteLine(msg);
         }
     }
