@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Bridge.CLI
 {
@@ -17,7 +13,7 @@ namespace Bridge.CLI
         private bool active;
         private readonly Thread thread;
 
-        public ConsoleSpinner(int delay = 100) : this (Console.CursorLeft, Console.CursorTop, delay) 
+        public ConsoleSpinner(int delay = 100) : this(Console.CursorLeft, Console.CursorTop, delay)
         {
         }
 
@@ -49,6 +45,7 @@ namespace Bridge.CLI
                 Turn();
                 Thread.Sleep(delay);
             }
+
             Draw(' ');
         }
 

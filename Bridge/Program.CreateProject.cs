@@ -5,7 +5,6 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace Bridge.CLI
@@ -18,7 +17,7 @@ namespace Bridge.CLI
             var templatesPath = Path.Combine(rootPath, "Templates");
             var templatePath = Path.Combine(templatesPath, template);
 
-            if(Directory.Exists(templatePath))
+            if (Directory.Exists(templatePath))
             {
                 foreach (string dirPath in Directory.GetDirectories(templatePath, "*", SearchOption.AllDirectories))
                 {
@@ -27,18 +26,20 @@ namespace Bridge.CLI
                     if (!Directory.Exists(path))
                     {
                         Directory.CreateDirectory(path);
-                    }                    
-                }                    
+                    }
+                }
 
                 foreach (string newPath in Directory.GetFiles(templatePath, "*.*", SearchOption.AllDirectories))
                 {
                     File.Copy(newPath, newPath.Replace(templatePath, folder), true);
-                }                    
+                }
 
                 var packagesConfigPath = Path.Combine(folder, "packages.config");
+
                 if (File.Exists(packagesConfigPath))
                 {
                     XDocument config = XDocument.Load(packagesConfigPath);
+
                     var packages = config
                         .Element("packages")
                         .Elements("package")
@@ -50,29 +51,33 @@ namespace Bridge.CLI
                         AddPackage(folder, pkg.id, pkg.version);
                     }
                 }
-            }            
+            }
         }
 
         private static void CreatePackageConfig(string folder)
         {
             var fileName = Path.Combine(folder, "packages.config");
+
             if (!File.Exists(fileName))
             {
                 StringBuilder sb = new StringBuilder();
+
                 sb.AppendLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
                 sb.AppendLine("<packages>");
                 sb.AppendLine("</packages>");
+
                 using (var stream = File.CreateText(fileName))
                 {
                     stream.Write(sb.ToString());
-                }                    
+                }
             }
         }
 
         private static void AddPackage(string folder, string packageName, string version = null, bool restore = false)
         {
             var packagesFolder = Path.Combine(folder, "packages");
-            if(!Directory.Exists(packagesFolder))
+
+            if (!Directory.Exists(packagesFolder))
             {
                 Directory.CreateDirectory(packagesFolder);
             }
@@ -82,7 +87,7 @@ namespace Bridge.CLI
             string name = packageName + (hasVersion ? "." + version : "");
             string localFile = Path.Combine(packagesFolder, name + ".nupkg");
 
-            if(File.Exists(localFile))
+            if (File.Exists(localFile))
             {
                 File.Delete(localFile);
             }
@@ -100,11 +105,12 @@ namespace Bridge.CLI
             {
                 string packageFolder = null;
                 bool exists = false;
+
                 using (var spinner = new ConsoleSpinner())
                 {
                     spinner.Start();
 
-                    if(hasVersion)
+                    if (hasVersion)
                     {
                         name = packageName + "." + version;
                     }
@@ -119,11 +125,13 @@ namespace Bridge.CLI
                             var fileName = System.IO.Path.GetFileName(webResponse.Headers["Location"]);
                             name = Path.GetFileNameWithoutExtension(fileName);
                         }
+
                         webResponse.Dispose();
                     }
 
                     name = name[0].ToString().ToUpper() + name.Substring(1);
                     packageFolder = Path.Combine(packagesFolder, name);
+
                     if (Directory.Exists(packageFolder))
                     {
                         exists = true;
@@ -133,7 +141,7 @@ namespace Bridge.CLI
                         WebClient client = new WebClient();
                         client.DownloadFile(uri, localFile);
                         client.Dispose();
-                    }                    
+                    }
                 }
 
                 if (exists)
@@ -154,21 +162,22 @@ namespace Bridge.CLI
                     File.Move(localFile, Path.Combine(packageFolder, Path.GetFileName(packageFolder) + ".nupkg"));
 
                     PackageInfo info = null;
-                    if(!restore)
+
+                    if (!restore)
                     {
                         info = ReadPackageInfo(packageName, packageFolder);
                         AddPackageToConfig(folder, info.Id, info.Version);
                     }
-                    
+
                     CleanPackageAfterDownload(packageFolder);
 
-                    if(info != null && !restore)
+                    if (info != null && !restore)
                     {
                         DownloadDependencies(folder, info);
-                    }                    
+                    }
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Error("Error: ");
                 Error(e.Message);
@@ -189,6 +198,7 @@ namespace Bridge.CLI
             foreach (var file in files)
             {
                 var foundFiles = Directory.GetFiles(packageFolder, file, SearchOption.TopDirectoryOnly);
+
                 foreach (var foundFile in foundFiles)
                 {
                     File.Delete(foundFile);
@@ -199,6 +209,7 @@ namespace Bridge.CLI
         private static string PackageExists(string folder, string id, string version)
         {
             var tmpDir = Path.Combine(folder, "packages");
+
             if (!Directory.Exists(tmpDir))
             {
                 tmpDir = Path.Combine(Directory.GetParent(folder).ToString(), "packages");
@@ -208,6 +219,7 @@ namespace Bridge.CLI
 
             var name = id + "." + version;
             var packageFolder = Path.Combine(folder, name);
+
             if (Directory.Exists(packageFolder))
             {
                 return packageFolder;
@@ -218,6 +230,7 @@ namespace Bridge.CLI
             if (dirs.Length > 0)
             {
                 dirs = SortNewestPackage(id, dirs);
+
                 var dir = dirs.First();
                 var dirName = Path.GetFileName(dir);
                 var dirVersion = dirName.Substring(id.Length + 1);
@@ -241,6 +254,7 @@ namespace Bridge.CLI
             var packagesConfig = Path.Combine(folder, "packages.config");
 
             var tmpDir = Path.Combine(folder, "packages");
+
             if (!Directory.Exists(tmpDir))
             {
                 tmpDir = Path.Combine(Directory.GetParent(folder).ToString(), "packages");
@@ -265,7 +279,7 @@ namespace Bridge.CLI
 
                 var nodes = doc.DocumentElement.SelectNodes($"descendant::package[@id='{id}']");
 
-                if(nodes.Count > 0)
+                if (nodes.Count > 0)
                 {
                     foreach (System.Xml.XmlNode node in nodes)
                     {
@@ -273,7 +287,7 @@ namespace Bridge.CLI
                     }
 
                     doc.Save(packagesConfig);
-                }                
+                }
             }
         }
 
@@ -286,7 +300,7 @@ namespace Bridge.CLI
                     if (PackageExists(folder, dependency.Id, dependency.Version) == null)
                     {
                         AddPackage(folder, dependency.Id, dependency.Version);
-                    }                    
+                    }
                 }
             }
         }
@@ -298,6 +312,7 @@ namespace Bridge.CLI
             if (nuspec != null)
             {
                 XDocument config = XDocument.Load(nuspec);
+
                 var ns = config.Root.Name.Namespace.ToString();
                 var meta = config.Element(XName.Get("package", ns)).Element(XName.Get("metadata", ns));
                 var id_package = meta.Element(XName.Get("id", ns)).Value;
@@ -315,14 +330,17 @@ namespace Bridge.CLI
             }
 
             var name = Path.GetFileName(packageFolder);
+
             return new PackageInfo(id, name.Substring(id.Length + 1));
         }
 
         private static void AddPackageToConfig(string folder, string id, string version, string targetFramework = null)
         {
             CreatePackageConfig(folder);
+
             var configFileName = Path.Combine(folder, "packages.config");
             var doc = new System.Xml.XmlDocument();
+
             doc.LoadXml(File.ReadAllText(configFileName));
 
             if (doc.DocumentElement.SelectSingleNode($"descendant::package[@id='{id}' and @version='{version}']") != null)
@@ -339,7 +357,7 @@ namespace Bridge.CLI
             attr.Value = version;
             node.Attributes.Append(attr);
 
-            if(!string.IsNullOrWhiteSpace(targetFramework))
+            if (!string.IsNullOrWhiteSpace(targetFramework))
             {
                 attr = doc.CreateAttribute("targetFramework");
                 attr.Value = targetFramework;
@@ -352,12 +370,15 @@ namespace Bridge.CLI
 
         private static string[] SortNewestPackage(string id, IEnumerable<string> dirs)
         {
-            var versions = dirs.Select(d => {
+            var versions = dirs.Select(d =>
+            {
                 var name = Path.GetFileName(d);
                 return new Tuple<string, Version>(d, new Version(name.Substring(id.Length + 1)));
-             }).ToList();
+            }).ToList();
+
             versions.Sort((a, b) => a.Item2.CompareTo(b.Item2));
             versions.Reverse();
+
             return versions.Select(v => v.Item1).ToArray();
         }
 
@@ -366,6 +387,7 @@ namespace Bridge.CLI
             var packagesConfig = Path.Combine(folder, "packages.config");
 
             var tmpDir = Path.Combine(folder, "packages");
+
             if (!Directory.Exists(tmpDir))
             {
                 tmpDir = Path.Combine(Directory.GetParent(folder).ToString(), "packages");
@@ -391,7 +413,7 @@ namespace Bridge.CLI
 
                         bool restore = false;
 
-                        if(!Directory.Exists(packageDir))
+                        if (!Directory.Exists(packageDir))
                         {
                             restore = true;
                         }

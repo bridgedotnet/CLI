@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Net;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace Bridge.CLI
 {
@@ -27,6 +20,7 @@ namespace Bridge.CLI
         {
             dir = dir ?? Environment.CurrentDirectory;
             var tmpDir = Path.Combine(dir, "packages");
+
             if (!Directory.Exists(tmpDir))
             {
                 tmpDir = Path.Combine(Directory.GetParent(dir).ToString(), "packages");
@@ -36,17 +30,21 @@ namespace Bridge.CLI
 
             string asmFile = null;
             string name = "Bridge.dll";
+
             if (dir != null && Directory.Exists(dir))
             {
                 var packagesDirs = Directory.GetDirectories(dir, "bridge.core.*", SearchOption.TopDirectoryOnly);
+
                 if (packagesDirs.Length > 0)
                 {
                     packagesDirs = SortNewestPackage("bridge.core", packagesDirs);
+
                     foreach (var packageDir in packagesDirs)
                     {
                         if (Regex.IsMatch(Path.GetFileName(packageDir), @"\ABridge\.Core\.\d+(?:\.\d+)+\z", RegexOptions.IgnoreCase))
                         {
                             asmFile = Path.Combine(Path.Combine(Path.Combine(packageDir, "lib"), "net40"), name);
+
                             if (File.Exists(asmFile))
                             {
                                 break;
@@ -73,6 +71,7 @@ namespace Bridge.CLI
         {
             dir = dir ?? Environment.CurrentDirectory;
             var tmpDir = Path.Combine(dir, "packages");
+
             if (!Directory.Exists(tmpDir))
             {
                 tmpDir = Path.Combine(Directory.GetParent(dir).ToString(), "packages");
@@ -81,18 +80,22 @@ namespace Bridge.CLI
             dir = tmpDir;
 
             string path = null;
+
             if (dir != null && Directory.Exists(dir))
             {
                 var packagesDirs = Directory.GetDirectories(dir, "bridge.min.*", SearchOption.TopDirectoryOnly);
+
                 if (packagesDirs.Length > 0)
                 {
                     packagesDirs = SortNewestPackage("bridge.min", packagesDirs);
+
                     foreach (var packageDir in packagesDirs)
                     {
                         if (Regex.IsMatch(Path.GetFileName(packageDir), @"\ABridge\.Min\.\d+(?:\.\d+)+\z", RegexOptions.IgnoreCase))
                         {
                             path = Path.Combine(packageDir, "tools");
                             var asmFile = Path.Combine(path, "Bridge.Translator.dll");
+
                             if (File.Exists(asmFile))
                             {
                                 break;

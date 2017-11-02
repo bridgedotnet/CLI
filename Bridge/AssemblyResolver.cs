@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Bridge.CLI
 {
@@ -11,7 +7,7 @@ namespace Bridge.CLI
     {
         public string CoreFolder { get; private set; }
 
-        public AssemblyResolver (string coreFolder)
+        public AssemblyResolver(string coreFolder)
         {
             this.CoreFolder = coreFolder;
         }
@@ -22,6 +18,7 @@ namespace Bridge.CLI
 
             AssemblyName askedAssembly = new AssemblyName(args.Name);
             Assembly assemblyLoaded = null;
+
             assemblyLoaded = AssemblyResolver.CheckIfAssemblyLoaded(askedAssembly.Name, domain);
 
             if (assemblyLoaded != null)
@@ -31,10 +28,10 @@ namespace Bridge.CLI
 
             var asmFile = System.IO.Path.Combine(CoreFolder, askedAssembly.Name + ".dll");
 
-            if(System.IO.File.Exists(asmFile))
+            if (System.IO.File.Exists(asmFile))
             {
                 return System.Reflection.Assembly.LoadFile(asmFile);
-            }            
+            }
 
             return null;
         }
@@ -45,6 +42,7 @@ namespace Bridge.CLI
             foreach (var assembly in assemblies)
             {
                 var assemblyName = new AssemblyName(assembly.FullName);
+
                 if (assemblyName.Name == fullAssemblyName)
                 {
                     return assembly;
@@ -57,9 +55,11 @@ namespace Bridge.CLI
         public static Assembly CheckIfFullAssemblyLoaded(AssemblyName name, AppDomain domain)
         {
             var assemblies = domain.GetAssemblies();
+
             foreach (var assembly in assemblies)
             {
                 var assemblyName = new AssemblyName(assembly.FullName);
+
                 if (assemblyName.FullName == name.FullName)
                 {
                     return assembly;

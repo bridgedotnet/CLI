@@ -1,13 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace Bridge.CLI
 {
@@ -31,6 +22,7 @@ namespace Bridge.CLI
         private static void WriteLine(string message, ConsoleColor color, bool newLine = true)
         {
             Console.ForegroundColor = color;
+
             if (newLine)
             {
                 Console.WriteLine(message);

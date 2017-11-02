@@ -25,11 +25,11 @@ namespace Bridge.CLI
             CoreFolder = GetCoreFolder(currentDir);
             var resolver = new AssemblyResolver(CoreFolder);
             AppDomain.CurrentDomain.AssemblyResolve += resolver.CurrentDomain_AssemblyResolve;
-            
+
             TranslatorAssembly = GetTranslatorAssembly(CoreFolder);
             ContractAssembly = GetContractAssembly(CoreFolder);
 
-            if(!EnsureMinimalCompilerVersion())
+            if (!EnsureMinimalCompilerVersion())
             {
                 return 1;
             }
@@ -37,6 +37,7 @@ namespace Bridge.CLI
             if (args.Length == 0)
             {
                 ShowUsage();
+
                 return 1;
             }
 
@@ -47,6 +48,7 @@ namespace Bridge.CLI
             if (bridgeOptions == null)
             {
                 ShowHelp();
+
                 return 1;
             }
 
@@ -79,7 +81,7 @@ namespace Bridge.CLI
                 {
                     var htmlFile = Path.Combine(outputPath, "index.html");
 
-                    if(File.Exists(htmlFile))
+                    if (File.Exists(htmlFile))
                     {
                         System.Diagnostics.Process.Start(htmlFile);
                     }
@@ -88,6 +90,7 @@ namespace Bridge.CLI
             catch (Exception ex)
             {
                 var exceptionType = ex.GetType();
+
                 if (GetEmitterException().IsAssignableFrom(exceptionType))
                 {
                     dynamic dex = ex;
@@ -96,6 +99,7 @@ namespace Bridge.CLI
                 }
 
                 var ee = processor.Translator != null ? processor.Translator.CreateExceptionFromLastNode() : null;
+
                 if (ee != null)
                 {
                     Error(string.Format("Bridge.NET Compiler error: {2} ({3}, {4}) {0} {1}", ex.Message, ex.StackTrace, ee.FileName, ee.StartLine, ee.StartColumn, ee.EndLine, ee.EndColumn));
@@ -105,6 +109,7 @@ namespace Bridge.CLI
                     // Iteractively print inner exceptions
                     var ine = ex;
                     var elvl = 0;
+
                     while (ine != null)
                     {
                         Error(string.Format("Bridge.NET Compiler error: exception level: {0} - {1}\nStack trace:\n{2}", elvl++, ine.Message, ine.StackTrace));
@@ -120,9 +125,11 @@ namespace Bridge.CLI
         private static bool EnsureMinimalCompilerVersion()
         {
             var installedVersion = GetCompilerVersion().ProductVersion;
+
             if (new Version("16.4.2").CompareTo(new Version(installedVersion)) > 0)
             {
                 Error($"Minimum required version of Bridge compiler is 16.4.2. Your version: {installedVersion}");
+
                 return false;
             }
 
@@ -143,8 +150,8 @@ namespace Bridge.CLI
 Usage: bridge [commands] [[options] path-to-application]
 
 Common Options:
-  new             Initialize a valid Bridge C# Class Library project. 
-  build           Builds the Bridge project. 
+  new             Initialize a valid Bridge C# Class Library project.
+  build           Builds the Bridge project.
   run             Compiles and immediately runs the index.html file.
   add package     Add package to project
   remove package  Remove package from project
@@ -215,11 +222,13 @@ To get started on developing applications for Bridge.NET, please see:
                 if (arg.ToLower().EndsWith(".csproj"))
                 {
                     bridgeOptions.ProjectLocation = arg;
+
                     return true;
                 }
                 else if (arg.ToLower().EndsWith(".dll"))
                 {
                     bridgeOptions.Lib = arg;
+
                     return true;
                 }
             }
@@ -250,6 +259,7 @@ To get started on developing applications for Bridge.NET, please see:
                 {
                     case "add":
                         string entity = null;
+
                         if (args.Length > (i + 1))
                         {
                             entity = args[++i];
@@ -259,6 +269,7 @@ To get started on developing applications for Bridge.NET, please see:
                         {
                             case "package":
                                 string package = null;
+
                                 if (args.Length > (i + 1))
                                 {
                                     package = args[++i];
@@ -270,22 +281,27 @@ To get started on developing applications for Bridge.NET, please see:
                                 }
 
                                 string version = null;
+
                                 if (args.Length > (i + 2) && (args[i + 1] == "-v" || args[i + 1] == "--version"))
                                 {
                                     version = args[i + 2];
                                 }
 
                                 AddPackage(currentDir, package, version);
-                                
+
                                 break;
+
                             default:
                                 throw new Exception($"{entity} is unknown entity for adding.");
                         }
 
                         skip = true;
+
                         return bridgeOptions;
+
                     case "remove":
                         string r_entity = null;
+
                         if (args.Length > (i + 1))
                         {
                             r_entity = args[++i];
@@ -295,6 +311,7 @@ To get started on developing applications for Bridge.NET, please see:
                         {
                             case "package":
                                 string package = null;
+
                                 if (args.Length > (i + 1))
                                 {
                                     package = args[++i];
@@ -308,14 +325,18 @@ To get started on developing applications for Bridge.NET, please see:
                                 RemovePackage(currentDir, package);
 
                                 break;
+
                             default:
                                 throw new Exception($"{r_entity} is unknown entity for remove.");
                         }
 
                         skip = true;
+
                         return bridgeOptions;
+
                     case "restore":
                         string restore_entity = null;
+
                         if (args.Length > (i + 1))
                         {
                             restore_entity = args[++i];
@@ -326,31 +347,39 @@ To get started on developing applications for Bridge.NET, please see:
                             case "packages":
                                 RestorePackages(currentDir);
                                 break;
+
                             default:
                                 throw new Exception($"{restore_entity} is unknown entity for restore.");
                         }
 
                         skip = true;
+
                         return bridgeOptions;
+
                     case "build":
                         bridgeOptions.Rebuild = true;
                         bridgeOptions.Folder = currentDir;
                         RestorePackages(currentDir);
+
                         break;
+
                     case "run":
                         bridgeOptions.Folder = currentDir;
                         RestorePackages(currentDir);
                         run = true;
+
                         break;
+
                     case "new":
                         string tpl = "classlib";
-                        if (args.Length > (i + 1) && !args[i+1].StartsWith("-"))
+                        if (args.Length > (i + 1) && !args[i + 1].StartsWith("-"))
                         {
                             tpl = args[++i];
                         }
 
                         CreateProject(currentDir, tpl);
                         skip = true;
+
                         return bridgeOptions;
                     // backwards compatibility -- now is non-switch argument to builder
                     case "-p":
@@ -361,19 +390,23 @@ To get started on developing applications for Bridge.NET, please see:
                             Error("Error: Project and assembly file specification is mutually exclusive.");
                             return null;
                         };
+
                         bridgeOptions.ProjectLocation = args[++i];
+
                         break;
 
                     case "-b":
                     case "-bridge": // backwards compatibility
                     case "--bridge":
                         bridgeOptions.BridgeLocation = args[++i];
+
                         break;
 
                     case "-o":
                     case "-output": // backwards compatibility
                     case "--output":
                         bridgeOptions.OutputLocation = args[++i];
+
                         break;
 
                     case "-c":
@@ -382,12 +415,14 @@ To get started on developing applications for Bridge.NET, please see:
                     case "--configuration":
                         configuration = args[++i];
                         hasPriorityConfiguration = true;
+
                         break;
 
                     case "-P":
                     case "--platform":
                         platform = args[++i];
                         hasPriorityPlatform = true;
+
                         break;
 
                     case "-def": // backwards compatibility
@@ -396,23 +431,27 @@ To get started on developing applications for Bridge.NET, please see:
                     case "--define":
                         defineConstants = args[++i];
                         hasPriorityDefineConstants = true;
+
                         break;
 
                     case "-rebuild": // backwards compatibility
                     case "--rebuild":
                     case "-r":
                         bridgeOptions.Rebuild = true;
+
                         break;
 
                     case "-nocore": // backwards compatibility
                     case "--nocore":
                         bridgeOptions.ExtractCore = false;
+
                         break;
 
                     case "-s":
                     case "-src": // backwards compatibility
                     case "--source":
                         bridgeOptions.Sources = args[++i];
+
                         break;
 
                     case "-S":
@@ -423,6 +462,7 @@ To get started on developing applications for Bridge.NET, please see:
                         {
                             Error("Invalid argument --setting(-S): " + args[i]);
                             Error(error);
+
                             return null;
                         }
 
@@ -432,6 +472,7 @@ To get started on developing applications for Bridge.NET, please see:
                     case "-folder": // backwards compatibility
                     case "--folder":
                         bridgeOptions.Folder = Path.Combine(currentDir, args[++i]);
+
                         break;
 
                     case "-rp":
@@ -440,16 +481,19 @@ To get started on developing applications for Bridge.NET, please see:
                         EnsureProperty(bridgeOptions, "ReferencesPath");
                         bridgeOptions.ReferencesPath = args[++i];
                         bridgeOptions.ReferencesPath = Path.IsPathRooted(bridgeOptions.ReferencesPath) ? bridgeOptions.ReferencesPath : Path.Combine(currentDir, bridgeOptions.ReferencesPath);
+
                         break;
 
                     case "-R":
                     case "-recursive": // backwards compatibility
                     case "--recursive":
                         bridgeOptions.Recursive = true;
+
                         break;
 
                     case "--norecursive":
                         bridgeOptions.Recursive = false;
+
                         break;
 
                     case "-lib": // backwards compatibility -- now is non-switch argument to builder
@@ -458,24 +502,29 @@ To get started on developing applications for Bridge.NET, please see:
                             Error("Error: Project and assembly file specification is mutually exclusive.");
                             return null;
                         }
+
                         bridgeOptions.Lib = args[++i];
+
                         break;
 
                     case "-h":
                     case "--help":
                         ShowHelp();
                         skip = true;
+
                         return bridgeOptions; // success. Asked for help. Help provided
 
                     case "-v":
                     case "--version":
                         ShowVersion();
                         skip = true;
+
                         return bridgeOptions; // success. Asked for version. Version provided.
 
                     case "-notimestamp":
                     case "--notimestamp":
                         bridgeOptions.NoTimeStamp = true;
+
                         break;
 
 #if DEBUG
@@ -497,7 +546,9 @@ To get started on developing applications for Bridge.NET, please see:
                             // as the file parameter and ignore following arguments, if any.
                             BindCmdArgumentToOption(args[i + 1], bridgeOptions);
                         }
+
                         i = args.Length; // move to the end of arguments list
+
                         break;
 
                     default:
@@ -509,6 +560,7 @@ To get started on developing applications for Bridge.NET, please see:
                             Error("Invalid argument: " + args[i]);
                             return null;
                         }
+
                         break;
                 }
 
@@ -549,15 +601,17 @@ To get started on developing applications for Bridge.NET, please see:
                 {
                     Error("Could not default to a csproj because multiple were found:");
                     Info(string.Join(", ", csprojs.Select(path => Path.GetFileName(path))));
+
                     return null; // error: arguments not provided, so can't guess what to do
                 }
 
                 if (csprojs.Length > 0)
                 {
                     var csproj = csprojs[0];
+
                     bridgeOptions.ProjectLocation = csproj;
                     Info("Defaulting Project Location to " + csproj);
-                }                
+                }
             }
 
             if (string.IsNullOrEmpty(bridgeOptions.OutputLocation))
@@ -586,6 +640,7 @@ To get started on developing applications for Bridge.NET, please see:
                             foreach (var path in DEFAULT_REFERENCES_PATHES)
                             {
                                 var checkFolder = Path.Combine(folder, path);
+
                                 if (Directory.Exists(checkFolder))
                                 {
                                     bridgeOptions.ReferencesPath = checkFolder;
@@ -597,7 +652,7 @@ To get started on developing applications for Bridge.NET, please see:
 
                             bridgeOptions.Lib = Path.Combine(found ? folder : Path.Combine(folder, DEFAULT_REFERENCES_PATHES[0]), name + ".dll");
                         }
-                    }                                  
+                    }
                 }
 
                 bridgeOptions.DefaultFileName = Path.GetFileNameWithoutExtension(bridgeOptions.Lib);
@@ -621,7 +676,7 @@ To get started on developing applications for Bridge.NET, please see:
             if (obj is System.Dynamic.ExpandoObject)
             {
                 return ((IDictionary<string, object>)obj).ContainsKey(name);
-            }                
+            }
 
             return obj.GetType().GetProperty(name) != null;
         }
@@ -661,6 +716,7 @@ To get started on developing applications for Bridge.NET, please see:
                 }
 
                 var parts = pair.Split(new char[] { ':' }, 2);
+
                 if (parts.Length < 2)
                 {
                     continue;
