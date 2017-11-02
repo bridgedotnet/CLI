@@ -70,7 +70,7 @@
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <PostBuildEvent>XCOPY "$(ProjectDir)Bridge\Templates" "$(TargetDir)\Templates\" /E /Y
-XCOPY "$(SolutionDir)packages\Bridge.Min.16.4.2\tools" "$(TargetDir)\Core\" /E /Y</PostBuildEvent>
+XCOPY "$(SolutionDir)packages\Bridge.Min.16.5.0\tools" "$(TargetDir)\Core\" /E /Y</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>
