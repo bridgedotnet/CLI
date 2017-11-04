@@ -15,7 +15,7 @@
     </NuGetPackageImportStamp>
     <!-- Download the nuget.exe if it is not present in .nuget/ -->
     <DownloadNuGetExe>true</DownloadNuGetExe>
-    <!-- Restore Nuget packages on build, using NuGet.target rules. -->
+    <!-- Restore Nuget packages on build, using NuGet.targets rules. -->
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
