@@ -5,11 +5,11 @@
 *.asax text eol=lf
 *.ashx text eol=lf
 *.aspx text eol=lf
-*.bat text eol=crlf
+*.bat eol=crlf
 *.config text eol=lf
 *.cs text eol=lf
 *.cshtml text eol=lf
-*.csproj text eol=crlf
+*.csproj eol=crlf
 *.css eol=lf
 *.d.ts eol=lf
 *.htm text eol=lf
@@ -22,7 +22,7 @@
 *.php text
 *.ps1 text
 *.py text
-*.sln text eol=crlf
+*.sln eol=crlf
 *.sql text eol=lf
 *.svg eol=lf
 *.target text
