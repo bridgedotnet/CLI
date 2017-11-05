@@ -125,10 +125,10 @@ namespace Bridge.CLI
         private static bool EnsureMinimalCompilerVersion()
         {
             var installedVersion = GetCompilerVersion().ProductVersion;
-
-            if (new Version("16.4.2").CompareTo(new Version(installedVersion)) > 0)
+            var minVersion = "16.5.0";
+            if (new Version(minVersion).CompareTo(new Version(installedVersion)) > 0)
             {
-                Error($"Minimum required version of Bridge compiler is 16.4.2. Your version: {installedVersion}");
+                Error($"Minimum required version of Bridge compiler is {minVersion}. Your version: {installedVersion}");
 
                 return false;
             }

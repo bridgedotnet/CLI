@@ -64,13 +64,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Bridge\Templates\classlib\packages.config" />
+    <None Include="Bridge\templates\classlib\packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <PostBuildEvent>XCOPY "$(ProjectDir)Bridge\Templates" "$(TargetDir)\Templates\" /E /Y
-XCOPY "$(SolutionDir)packages\Bridge.Min.16.5.0\tools" "$(TargetDir)\Core\" /E /Y</PostBuildEvent>
+    <PostBuildEvent>XCOPY "$(ProjectDir)Bridge\templates" "$(TargetDir)\templates\" /E /Y
+XCOPY "$(SolutionDir)packages\Bridge.Min.16.5.0\tools" "$(TargetDir)\tools\" /E /Y
+move /-y "$(TargetDir)\bridge.pdb" "$(TargetDir)\tools\"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>
