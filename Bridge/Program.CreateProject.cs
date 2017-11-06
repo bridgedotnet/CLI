@@ -14,7 +14,7 @@ namespace Bridge.CLI
         private static void CreateProject(string folder, string template)
         {
             var rootPath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
-            var templatesPath = Path.Combine(rootPath, "Templates");
+            var templatesPath = Path.Combine(rootPath, Constants.TemplatesFolder);
             var templatePath = Path.Combine(templatesPath, template);
 
             if (Directory.Exists(templatePath))
