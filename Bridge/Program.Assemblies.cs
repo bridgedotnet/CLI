@@ -56,7 +56,7 @@ namespace Bridge.CLI
 
             if (asmFile == null)
             {
-                asmFile = Path.Combine(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "Core"), name);
+                asmFile = Path.Combine(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), Constants.AssembliesFolder), name);
             }
 
             return File.Exists(asmFile) ? asmFile : null;
@@ -93,7 +93,7 @@ namespace Bridge.CLI
                     {
                         if (Regex.IsMatch(Path.GetFileName(packageDir), @"\ABridge\.Min\.\d+(?:\.\d+)+\z", RegexOptions.IgnoreCase))
                         {
-                            path = Path.Combine(packageDir, "tools");
+                            path = Path.Combine(packageDir, Constants.AssembliesFolder);
                             var asmFile = Path.Combine(path, "Bridge.Translator.dll");
 
                             if (File.Exists(asmFile))
@@ -107,7 +107,7 @@ namespace Bridge.CLI
 
             if (path == null || !Directory.Exists(path))
             {
-                return Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "Core");
+                return Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), Constants.AssembliesFolder);
             }
 
             return path;

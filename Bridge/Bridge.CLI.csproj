@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="AssemblyResolver.cs" />
     <Compile Include="ConsoleSpinner.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Program.Types.cs" />
     <Compile Include="Program.Console.cs" />
     <Compile Include="Program.Assemblies.cs" />
