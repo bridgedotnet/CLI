@@ -42,7 +42,7 @@ Option | Description
 Option | Description
 ---- | ----
 -c --configuration &lt;name> | Configuration name (Debug/Release etc).
--D --define &lt;const-list> | Semicolon-delimited list of project constants.
+-D --define &lt;list> | Semicolon-delimited list of project constants.
 -f --folder &lt;path> | Builder working directory relative to current dir.
 -h --help | Show help.
 -p --project &lt;path> | The .csproj file location.
@@ -55,3 +55,5 @@ Option | Description
 --nocore | Do not extract core javascript files.
 --norecursive | Non-recursive search for .cs source files.
 --notimestamp | Do not show timestamp in log messages.
+
+ More information on getting started with Bridge.NET at https://bridge.net/docs.
