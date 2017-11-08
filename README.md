@@ -14,7 +14,7 @@ bridge [sdk-options] [command] [arguments] [command-options]
 ```
 bridge new                  // Create a new project
 bridge add package retyped  // Add retyped
-bridge Build                // Build the project
+bridge build                // Build the project
 bridge run                  // Run the project index.html
 ```
 
@@ -26,7 +26,8 @@ new | Initialize a valid Bridge C# Class Library project.
 new &lt;template> | Initialize a new project based on the named Template. Default is classlib.
 build | Builds the Bridge project.
 run | Compiles and immediately runs the index.html file.
-add package &lt;name> | Add a package from NuGet.org
+add package &lt;name> | Add a package from NuGet.org to the project.
+remove package &lt;name> | Removes a Nuget package from the project.
 
 ## Common Options
 

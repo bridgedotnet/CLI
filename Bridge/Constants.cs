@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Bridge.CLI
+﻿namespace Bridge.CLI
 {
     /// <summary>
     /// Constant values valid throughout the application.
@@ -19,6 +13,6 @@ namespace Bridge.CLI
         /// <summary>
         /// Directory for CLI to look for template projects for new projects installation.
         /// </summary>
-        public static readonly string TemplatesFolder = "Templates";
+        public static readonly string TemplatesFolder = "templates";
     }
 }

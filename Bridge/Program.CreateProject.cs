@@ -97,7 +97,8 @@ namespace Bridge.CLI
 
             if (Directory.Exists(Path.Combine(packagesFolder, name)))
             {
-                Warn("Skipped (already exists).");
+                Warn("Skipped (already exists)");
+
                 return;
             }
 
@@ -146,11 +147,11 @@ namespace Bridge.CLI
 
                 if (exists)
                 {
-                    Warn("Skipped (already exists).");
+                    Warn("Skipped (already exists)");
                 }
                 else
                 {
-                    Info("Done.");
+                    Info("Done");
 
                     if (!restore)
                     {
@@ -181,6 +182,7 @@ namespace Bridge.CLI
             {
                 Error("Error: ");
                 Error(e.Message);
+
                 Console.WriteLine();
             }
         }

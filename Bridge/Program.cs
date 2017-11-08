@@ -36,7 +36,7 @@ namespace Bridge.CLI
 
             if (args.Length == 0)
             {
-                ShowUsage();
+                ShowHelp();
 
                 return 1;
             }
@@ -90,6 +90,7 @@ namespace Bridge.CLI
                 {
                     dynamic dex = ex;
                     Error(string.Format("Bridge.NET Compiler error: {2} ({3}, {4}) {0} {1}", ex.Message, ex.StackTrace, dex.FileName, dex.StartLine, dex.StartColumn, dex.EndLine, dex.EndColumn));
+
                     return 1;
                 }
 
@@ -111,6 +112,7 @@ namespace Bridge.CLI
                         ine = ine.InnerException;
                     }
                 }
+
                 return 1;
             }
 
@@ -136,31 +138,9 @@ namespace Bridge.CLI
             return System.Diagnostics.FileVersionInfo.GetVersionInfo(TranslatorAssembly.Location);
         }
 
-        private static void ShowUsage()
-        {
-            Console.WriteLine($@"Bridge.NET
-
-  Version  : {GetCompilerVersion().ProductVersion}
-
-Usage: bridge [commands] [[options] path-to-application]
-
-Common Options:
-  new             Initialize a valid Bridge C# Class Library project.
-  build           Builds the Bridge project.
-  run             Compiles and immediately runs the index.html file.
-  add package     Add package to project
-  remove package  Remove package from project
-
-Path to Output folder:
-  {Environment.CurrentDirectory}
-
-To get started on developing applications for Bridge.NET, please see:
-  http://bridge.net/docs");
-        }
-
         private static void ShowVersion()
         {
-            Console.WriteLine($"Version: {GetCompilerVersion().ProductVersion}");
+            Console.WriteLine(GetCompilerVersion().ProductVersion);
         }
 
         /// <summary>
@@ -171,42 +151,48 @@ To get started on developing applications for Bridge.NET, please see:
             string codeBase = Assembly.GetExecutingAssembly().CodeBase;
             string programName = Path.GetFileName(codeBase);
 
-            Console.WriteLine(@"Usage: " + programName + @" [options] (<project-file>|<assembly-file>)
-       " + programName + @" [-h|--help]
+            Console.WriteLine(@"
+Usage: 
+  bridge [commands] [options]
+  bridge [options] (<name>|<path>|<list>)
+  bridge [-h|--help]
 
--h --help                  This help message.
--c --configuration <name>  Configuration name (Debug/Release etc)
-                           [default: none].
--P --platform <name>       Platform name (AnyCPU etc) [default: none].
--S --settings <name:value> Comma-delimited list of project settings
-                           I.e -S name1:value1,name2:value2)
-                           List of allowed settings:
-                             AssemblyName, CheckForOverflowUnderflow,
-                             Configuration, DefineConstants,
-                             OutputPath, OutDir, OutputType,
-                             Platform, RootNamespace
-                           options -c, -P and -D have priority over -S
--r --rebuild               Force assembly rebuilding.
---nocore                   Do not extract core javascript files.
--D --define <const-list>   Semicolon-delimited list of project constants.
--b --bridge <file>         Bridge.dll file location (currently unused).
--s --source <file>         Source files name/pattern [default: *.cs].
--f --folder <path>         Builder working directory relative to current WD
-                           [default: current wd].
--R --recursive             Recursively search for .cs source files inside
-                           current workind directory.
---norecursive              Non-recursive search of .cs source files inside
-                           current workind directory.
--v --version               Version of Bridge compiler.
--notimestamp --notimestamp Do not show timestamp in log messages
-                           [default: shows timestamp]");
+
+Commands:
+  new                        Initialize a Bridge C# Class Library project.
+  build                      Builds the Bridge project.
+  run                        Compiles and immediately runs index.html file.
+  restore                    Restore dependencies specified in the project.
+  add package <name>         Add package to project
+  remove package <name>      Remove package from project
+
+
+Options:
+  -c|--configuration <name>  Configuration name (Debug/Release etc).
+  -D|--define <list>         Semicolon-delimited list of project constants.
+  -f|--folder <path>         Builder working directory relative to current dir.
+  -h|--help                  Display help.
+  -p|--project <path>        The .csproj file location.
+  -P|--platform <name>       Platform name (AnyCPU etc).
+  -r|--rebuild               Force assembly rebuilding.
+  -R|--recursive             Recursively search for .cs source files.
+  -s|--source <file>         Source files name/pattern [default: *.cs].
+  -S|--settings <name:value> Comma-delimited list of project settings.
+  -v|--version               Display version.
+  --norecursive              Non-recursive search for .cs source files.
+  --nocore                   Do not extract core javascript files.
+  --notimestamp              Do not show timestamp in log messages.
+
+
+  More information on getting started with
+  Bridge.NET at https://bridge.net/docs");
 
 #if DEBUG
-            // This code and logic is only compiled in when building bridge.net in Debug configuration
-            Console.WriteLine(@"-d --debug                 Attach the builder to a visual studio debugging
-                           session. Use this to attach the process to an
-                           open Bridge.NET solution. This option is equivalent
-                           to Build.dll's 'AttachDebugger'.");
+            // This code and logic is only compiled in when building a Bridge project in Debug mode
+            Console.WriteLine(@"  -d|--debug                   Attach the builder to a Visual Studio debugging
+                               session. Use this to attach the process to an
+                               open Bridge Solution. This option is equivalent
+                               to Build.dll's 'AttachDebugger'.");
 #endif
         }
 
@@ -227,6 +213,7 @@ To get started on developing applications for Bridge.NET, please see:
                     return true;
                 }
             }
+
             return false; // didn't bind anywhere
         }
 
@@ -272,7 +259,7 @@ To get started on developing applications for Bridge.NET, please see:
 
                                 if (string.IsNullOrWhiteSpace(package))
                                 {
-                                    throw new Exception("Please define package name.");
+                                    throw new Exception("Please include package name.");
                                 }
 
                                 string version = null;
@@ -367,6 +354,7 @@ To get started on developing applications for Bridge.NET, please see:
 
                     case "new":
                         string tpl = "classlib";
+
                         if (args.Length > (i + 1) && !args[i + 1].StartsWith("-"))
                         {
                             tpl = args[++i];
@@ -376,13 +364,13 @@ To get started on developing applications for Bridge.NET, please see:
                         skip = true;
 
                         return bridgeOptions;
-                    // backwards compatibility -- now is non-switch argument to builder
+
                     case "-p":
-                    case "-project":
                     case "--project":
                         if (bridgeOptions.Lib != null)
                         {
                             Error("Error: Project and assembly file specification is mutually exclusive.");
+
                             return null;
                         };
 
@@ -391,22 +379,18 @@ To get started on developing applications for Bridge.NET, please see:
                         break;
 
                     case "-b":
-                    case "-bridge": // backwards compatibility
                     case "--bridge":
                         bridgeOptions.BridgeLocation = args[++i];
 
                         break;
 
                     case "-o":
-                    case "-output": // backwards compatibility
                     case "--output":
                         bridgeOptions.OutputLocation = args[++i];
 
                         break;
 
                     case "-c":
-                    case "-cfg": // backwards compatibility
-                    case "-configuration": // backwards compatibility
                     case "--configuration":
                         configuration = args[++i];
                         hasPriorityConfiguration = true;
@@ -420,30 +404,25 @@ To get started on developing applications for Bridge.NET, please see:
 
                         break;
 
-                    case "-def": // backwards compatibility
                     case "-D":
-                    case "-define": // backwards compatibility
                     case "--define":
                         defineConstants = args[++i];
                         hasPriorityDefineConstants = true;
 
                         break;
 
-                    case "-rebuild": // backwards compatibility
                     case "--rebuild":
                     case "-r":
                         bridgeOptions.Rebuild = true;
 
                         break;
 
-                    case "-nocore": // backwards compatibility
                     case "--nocore":
                         bridgeOptions.ExtractCore = false;
 
                         break;
 
                     case "-s":
-                    case "-src": // backwards compatibility
                     case "--source":
                         bridgeOptions.Sources = args[++i];
 
@@ -452,6 +431,21 @@ To get started on developing applications for Bridge.NET, please see:
                     case "-S":
                     case "--settings":
                         var error = ParseProjectProperties(bridgeOptions, args[++i]);
+
+                        // Add --settings --help option
+/*
+Accepted Values:
+   AssemblyName, CheckForOverflowUnderflow,
+   Configuration, DefineConstants,
+   OutputPath, OutDir, OutputType,
+   Platform, RootNamespace
+
+ Example: 
+   -S name1: value1,name2: value2
+
+   Note: 
+   Options - c, -P and - D have priority over - S
+*/
 
                         if (error != null)
                         {
@@ -464,14 +458,11 @@ To get started on developing applications for Bridge.NET, please see:
                         break;
 
                     case "-f":
-                    case "-folder": // backwards compatibility
                     case "--folder":
                         bridgeOptions.Folder = Path.Combine(currentDir, args[++i]);
 
                         break;
 
-                    case "-rp":
-                    case "-referencespath": // backwards compatibility
                     case "--referencespath":
                         EnsureProperty(bridgeOptions, "ReferencesPath");
                         bridgeOptions.ReferencesPath = args[++i];
@@ -480,7 +471,6 @@ To get started on developing applications for Bridge.NET, please see:
                         break;
 
                     case "-R":
-                    case "-recursive": // backwards compatibility
                     case "--recursive":
                         bridgeOptions.Recursive = true;
 
@@ -488,17 +478,6 @@ To get started on developing applications for Bridge.NET, please see:
 
                     case "--norecursive":
                         bridgeOptions.Recursive = false;
-
-                        break;
-
-                    case "-lib": // backwards compatibility -- now is non-switch argument to builder
-                        if (bridgeOptions.ProjectLocation != null)
-                        {
-                            Error("Error: Project and assembly file specification is mutually exclusive.");
-                            return null;
-                        }
-
-                        bridgeOptions.Lib = args[++i];
 
                         break;
 
@@ -516,18 +495,15 @@ To get started on developing applications for Bridge.NET, please see:
 
                         return bridgeOptions; // success. Asked for version. Version provided.
 
-                    case "-notimestamp":
                     case "--notimestamp":
                         bridgeOptions.NoTimeStamp = true;
 
                         break;
 
 #if DEBUG
-                    case "-debug":
-                    case "--debug":
-                    case "-attachdebugger":
-                    case "--attachdebugger":
                     case "-d":
+                    case "--debug":
+                    case "--attachdebugger":
                         System.Diagnostics.Debugger.Launch();
                         break;
 #endif
@@ -553,6 +529,7 @@ To get started on developing applications for Bridge.NET, please see:
                         if (!BindCmdArgumentToOption(args[i], bridgeOptions))
                         {
                             Error("Invalid argument: " + args[i]);
+
                             return null;
                         }
 

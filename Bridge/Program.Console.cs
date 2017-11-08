@@ -6,23 +6,21 @@ namespace Bridge.CLI
     {
         private static void Error(string message, bool newLine = true)
         {
-            WriteLine(message, ConsoleColor.Red, newLine);
+            WriteLine(message, newLine);
         }
 
         private static void Warn(string message, bool newLine = true)
         {
-            WriteLine(message, ConsoleColor.Yellow, newLine);
+            WriteLine(message, newLine);
         }
 
         private static void Info(string message, bool newLine = true)
         {
-            WriteLine(message, ConsoleColor.Green, newLine);
+            WriteLine(message, newLine);
         }
 
-        private static void WriteLine(string message, ConsoleColor color, bool newLine = true)
+        private static void WriteLine(string message, bool newLine = true)
         {
-            Console.ForegroundColor = color;
-
             if (newLine)
             {
                 Console.WriteLine(message);
@@ -31,8 +29,6 @@ namespace Bridge.CLI
             {
                 Console.Write(message);
             }
-
-            Console.ForegroundColor = ConsoleColor.Gray;
         }
     }
 }

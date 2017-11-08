@@ -52,9 +52,7 @@ namespace Bridge.CLI
         private void Draw(char c)
         {
             Console.SetCursorPosition(left, top);
-            Console.ForegroundColor = ConsoleColor.Green;
             Console.Write(c);
-            Console.ForegroundColor = ConsoleColor.Gray;
         }
 
         private void Turn()

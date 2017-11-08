@@ -39,6 +39,7 @@ namespace Bridge.CLI
         public static Assembly CheckIfAssemblyLoaded(string fullAssemblyName, AppDomain domain)
         {
             var assemblies = domain.GetAssemblies();
+
             foreach (var assembly in assemblies)
             {
                 var assemblyName = new AssemblyName(assembly.FullName);
