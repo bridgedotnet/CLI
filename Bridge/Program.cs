@@ -65,12 +65,7 @@ namespace Bridge.CLI
             var logger = CreateLogger();
             dynamic processor = CreateTranslatorProcessor(bridgeOptions, logger);
 
-            var result = processor.PreProcess();
-
-            if (result != null)
-            {
-                return 1;
-            }
+            processor.PreProcess();
 
             try
             {
