@@ -5,8 +5,9 @@ A Command Line Interface for the [Bridge.NET](https://bridge.net) compiler.
 ## Usage
 
 ```
-bridge [runtime-options] [path-to-application]
-bridge [sdk-options] [command] [arguments] [command-options]
+bridge [commands] [options]
+bridge [options] (<name>|<path>|<list>)
+bridge [-h|--help]
 ```
 
 #### Example
@@ -18,7 +19,7 @@ bridge build                // Build the project
 bridge run                  // Run the project index.html
 ```
 
-## SDK Commands
+## Commands
 
 Command | Description
 ---- | ----
@@ -34,21 +35,23 @@ remove package &lt;name> | Removes a Nuget package from the project.
 Option | Description
 ---- | ----
 -h or --help | Show help.
+-v or --version | Show version.
 
-## Runtime Options
+## Options
 
 Option | Description
 ---- | ----
--c --configuration &lt;name> | Configuration name (Debug/Release etc). Default is none.
--P --platform &lt;name> | Platform name (AnyCPU etc) [default: none].
--S --settings &lt;name:value> | Comma-delimited list of project settings [`-S name1:value1,name2:value2`). List of allowed settings: `AssemblyName`, `CheckForOverflowUnderflow`, `Configuration`, `DefineConstants`, `OutputPath`, `OutDir`, `OutputType`, `Platform`, `RootNamespace`. Options `-c`, `-P` and `-D` have priority over `-S`
--r --rebuild | Force Assembly rebuilding.
---nocore | Do not extract core javascript files.
+-c --configuration &lt;name> | Configuration name (Debug/Release etc).
 -D --define &lt;const-list> | Semicolon-delimited list of project constants.
--b --bridge &lt;file> | Bridge.dll file location (currently unused).
+-f --folder &lt;path> | Builder working directory relative to current dir.
+-h --help | Show help.
+-p --project &lt;path> | The .csproj file location.
+-P --platform &lt;name> | Platform name (AnyCPU etc).
+-r --rebuild | Force Assembly rebuilding.
+-R --recursive | Recursively search for .cs source files.
 -s --source &lt;file> | Source files name/pattern [default: *.cs].
--f --folder &lt;path> | Builder working directory relative to current WD. [default: current wd]
--R --recursive | Recursively search for .cs source files inside current working directory.
--v or --version | Version of Bridge compiler.
---norecursive | Non-recursive search of .cs source files inside current working directory.
--notimestamp --notimestamp | Do not show timestamp in log messages. Default is to show timestamp.
+-S --settings &lt;name:value> Comma-delimited list of project settings.
+-v --version | Show version.
+--nocore | Do not extract core javascript files.
+--norecursive | Non-recursive search for .cs source files.
+--notimestamp | Do not show timestamp in log messages.

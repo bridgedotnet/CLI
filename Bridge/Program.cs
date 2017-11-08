@@ -179,8 +179,8 @@ Options:
   -s|--source <file>         Source files name/pattern [default: *.cs].
   -S|--settings <name:value> Comma-delimited list of project settings.
   -v|--version               Display version.
-  --norecursive              Non-recursive search for .cs source files.
   --nocore                   Do not extract core javascript files.
+  --norecursive              Non-recursive search for .cs source files.
   --notimestamp              Do not show timestamp in log messages.
 
 
