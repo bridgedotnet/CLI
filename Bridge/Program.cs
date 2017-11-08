@@ -434,17 +434,22 @@ Options:
 
                         // Add --settings --help option
 /*
-Accepted Values:
-   AssemblyName, CheckForOverflowUnderflow,
-   Configuration, DefineConstants,
-   OutputPath, OutDir, OutputType,
-   Platform, RootNamespace
+  Accepted Names:
+    AssemblyName
+    CheckForOverflowUnderflow
+    Configuration
+    DefineConstants
+    OutputPath
+    OutDir
+    OutputType
+    Platform
+    RootNamespace
 
- Example: 
-   -S name1: value1,name2: value2
+  Example: 
+    -S name1: value1,name2: value2
 
-   Note: 
-   Options - c, -P and - D have priority over - S
+  Note:
+    Options - c, -P and - D have priority over - S
 */
 
                         if (error != null)
