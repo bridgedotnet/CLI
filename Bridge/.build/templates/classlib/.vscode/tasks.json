@@ -6,7 +6,7 @@
         {
             "taskName": "bridge",
             "type": "shell",
-            "command": "..//bridge build",
+            "command": "mono ../bridge.exe build",
             "windows": {
                 "command": "..\\bridge build"
             },
@@ -14,10 +14,10 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "presentation": {
-                "reveal": "never",
-                "panel": "shared"
-            }
+          "presentation": {
+            "reveal": "never",
+            "panel": "shared"
+          }
         }
     ]
 }
