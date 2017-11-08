@@ -185,7 +185,8 @@ Options:
 
 
   More information on getting started with
-  Bridge.NET at https://bridge.net/docs");
+  Bridge.NET at https://bridge.net/docs
+");
 
 #if DEBUG
             // This code and logic is only compiled in when building a Bridge project in Debug mode
