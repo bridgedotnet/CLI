@@ -12,6 +12,8 @@
   !define TemplatesPath "Templates"
   !define SrcPath "..\..\Bridge\bin\${Build}"
 
+  !define SysUninstallKey "Software\Microsoft\Windows\CurrentVersion\Uninstall\${ProductName}"
+
   ; Whether to install to the current user or for the whole machine
   !define InstallScope "user" ; user or machine
 
@@ -164,6 +166,13 @@ Section "${ProductName} v${Version}" InstallBridge
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\${BridgeUninst}"
 
+  WriteRegStr "${RegistryRoot}" "${SysUninstallKey}" \
+    "DisplayName" "${ProductName} v${Version}"
+  WriteRegStr "${RegistryRoot}" "${SysUninstallKey}" \
+    "UninstallString" "$\"$INSTDIR\${BridgeUninst}$\""
+  WriteRegStr "${RegistryRoot}" "${SysUninstallKey}" \
+    "QuietUninstallString" "$\"$INSTDIR\${BridgeUninst}$\" /S"
+
 SectionEnd
 
 Section "Add to Path" AddToPath
@@ -271,5 +280,8 @@ Section "Uninstall"
 done:
   DeleteRegKey /ifempty "${RegistryRoot}" "${BaseRegKey}"
   DeleteRegKey /ifempty "${RegistryRoot}" "${CompanyRegKey}"
+
+  ;The windows uninstall entry will be removed for good.
+  DeleteRegKey "${RegistryRoot}" "${SysUninstallKey}" \
 
 SectionEnd
