@@ -7,7 +7,11 @@
 ; All users:
 ;!define Environ 'HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
 ; Current user only:
-!define Environ 'HKCU "Environment"'
+;!define Environ 'HKCU "Environment"'
+
+!ifndef Environ
+  !define Environ 'HKCU "Environment"'
+!endif
 
 ; AddToPath - Appends dir to PATH
 ;   (does not work on Win9x/ME)

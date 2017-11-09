@@ -11,7 +11,17 @@
   !define AssembliesPath "tools"
   !define TemplatesPath "Templates"
   !define SrcPath "..\..\Bridge\bin\${Build}"
-  !define InstallScope "HKCU" ; HKeyCurrentUser or HKeyLocalMachine (HKCU/HKLM)
+
+  ; Whether to install to the current user or for the whole machine
+  !define InstallScope "user" ; user or machine
+
+  !if ${InstallScope} == "machine"
+    !define RegistryRoot "HKLM"
+    !define Environ '${RegistryRoot} "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
+  !else
+    !define RegistryRoot "HKCU"
+    !define Environ '${RegistryRoot} "Environment"'
+  !endif
 
 ;--------------------------------
 ;NSIS Modern User Interface
@@ -23,7 +33,7 @@
 ;NSIS code not specific to Bridge, extracted from other sources
 
   !include "external-functions.nsh"
-  
+
 ;--------------------------------
 ;General
 
@@ -35,7 +45,7 @@
   InstallDir "$PROGRAMFILES\${CompanyName}\${ProductName}"
 
   ;Get installation folder from registry if available
-  InstallDirRegKey "${InstallScope}" "${BaseRegKey}" ""
+  InstallDirRegKey "${RegistryRoot}" "${BaseRegKey}" ""
 
   ;Request application privileges for Windows Vista and newer
   RequestExecutionLevel admin
@@ -68,7 +78,7 @@
 
 Function AskOrReuseDir
 
-  ReadRegStr $0 "${InstallScope}" "${BaseRegKey}" ""
+  ReadRegStr $0 "${RegistryRoot}" "${BaseRegKey}" ""
   IfErrors done
 
   ; Sets the installation path the same previously used
@@ -149,7 +159,7 @@ Section "${ProductName} v${Version}" InstallBridge
   File "${SrcPath}\${TemplatesPath}\classlib\Program.cs"
 
   ;Store installation folder
-  WriteRegStr "${InstallScope}" "${BaseRegKey}" "" $INSTDIR
+  WriteRegStr "${RegistryRoot}" "${BaseRegKey}" "" $INSTDIR
 
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\${BridgeUninst}"
@@ -162,7 +172,7 @@ Section "Add to Path" AddToPath
   Call AddToPath
 
   ;Store installation folder
-  WriteRegDWORD "${InstallScope}" "${BaseRegKey}" "AddedToPath" 1
+  WriteRegDWORD "${RegistryRoot}" "${BaseRegKey}" "AddedToPath" 1
 
 SectionEnd
 
@@ -250,16 +260,16 @@ Section "Uninstall"
   StrCpy $0 "$INSTDIR\.."
   Call un.DeleteDirIfEmpty
 
-  ReadRegDWORD $0 "${InstallScope}" "${BaseRegKey}" "AddedToPath"
+  ReadRegDWORD $0 "${RegistryRoot}" "${BaseRegKey}" "AddedToPath"
   IfErrors done
   ${If} $0 == 1
    Push "$INSTDIR"
    Call un.RemoveFromPath
   ${EndIf}
-  DeleteRegValue "${InstallScope}" "${BaseRegKey}" "AddedToPath"
+  DeleteRegValue "${RegistryRoot}" "${BaseRegKey}" "AddedToPath"
 
 done:
-  DeleteRegKey /ifempty "${InstallScope}" "${BaseRegKey}"
-  DeleteRegKey /ifempty "${InstallScope}" "${CompanyRegKey}"
+  DeleteRegKey /ifempty "${RegistryRoot}" "${BaseRegKey}"
+  DeleteRegKey /ifempty "${RegistryRoot}" "${CompanyRegKey}"
 
 SectionEnd
