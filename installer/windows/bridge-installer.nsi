@@ -11,6 +11,7 @@
   !define AssembliesPath "tools"
   !define TemplatesPath "Templates"
   !define SrcPath "..\..\Bridge\bin\${Build}"
+  !define InstallScope "HKCU" ; HKeyCurrentUser or HKeyLocalMachine (HKCU/HKLM)
 
 ;--------------------------------
 ;NSIS Modern User Interface
@@ -34,12 +35,13 @@
   InstallDir "$PROGRAMFILES\${CompanyName}\${ProductName}"
 
   ;Get installation folder from registry if available
-  InstallDirRegKey HKCU "${BaseRegKey}" ""
+  InstallDirRegKey "${InstallScope}" "${BaseRegKey}" ""
 
   ;Request application privileges for Windows Vista and newer
   RequestExecutionLevel admin
 
   SetCompressor /solid lzma
+
 ;--------------------------------
 ;Interface Settings
 
@@ -50,11 +52,34 @@
 
   !insertmacro MUI_PAGE_LICENSE "..\..\LICENSE"
   !insertmacro MUI_PAGE_COMPONENTS
+
+  !define MUI_PAGE_CUSTOMFUNCTION_SHOW AskOrReuseDir
   !insertmacro MUI_PAGE_DIRECTORY
+
   !insertmacro MUI_PAGE_INSTFILES
 
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
+
+;--------------------------------
+;Makes the target directory selection read-only if Bridge has already been
+;installed in the system. This will avoid reinstalling in another location
+;and losing install/uninstall information.
+
+Function AskOrReuseDir
+
+  ReadRegStr $0 "${InstallScope}" "${BaseRegKey}" ""
+  IfErrors done
+
+  ; Sets the installation path the same previously used
+  StrCpy $INSTDIR $0
+  EnableWindow $mui.DirectoryPage.Directory 0
+  EnableWindow $mui.DirectoryPage.BrowseButton 0
+  MessageBox MB_OK "An installation of ${ProductName} is already registered at '$INSTDIR'. To change destination install directory, you must uninstall it. Proceeding will upgrade/update current installation."
+
+done:
+
+FunctionEnd
 
 ;--------------------------------
 ;Languages
@@ -124,7 +149,7 @@ Section "${ProductName} v${Version}" InstallBridge
   File "${SrcPath}\${TemplatesPath}\classlib\Program.cs"
 
   ;Store installation folder
-  WriteRegStr HKCU "${BaseRegKey}" "" $INSTDIR
+  WriteRegStr "${InstallScope}" "${BaseRegKey}" "" $INSTDIR
 
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\${BridgeUninst}"
@@ -137,7 +162,7 @@ Section "Add to Path" AddToPath
   Call AddToPath
 
   ;Store installation folder
-  WriteRegDWORD HKCU "${BaseRegKey}" "AddedToPath" 1
+  WriteRegDWORD "${InstallScope}" "${BaseRegKey}" "AddedToPath" 1
 
 SectionEnd
 
@@ -225,16 +250,16 @@ Section "Uninstall"
   StrCpy $0 "$INSTDIR\.."
   Call un.DeleteDirIfEmpty
 
-  ReadRegDWORD $0 HKCU "${BaseRegKey}" "AddedToPath"
+  ReadRegDWORD $0 "${InstallScope}" "${BaseRegKey}" "AddedToPath"
   IfErrors done
   ${If} $0 == 1
    Push "$INSTDIR"
    Call un.RemoveFromPath
   ${EndIf}
-  DeleteRegValue HKCU "${BaseRegKey}" "AddedToPath"
+  DeleteRegValue "${InstallScope}" "${BaseRegKey}" "AddedToPath"
 
 done:
-  DeleteRegKey /ifempty HKCU "${BaseRegKey}"
-  DeleteRegKey /ifempty HKCU "${CompanyRegKey}"
+  DeleteRegKey /ifempty "${InstallScope}" "${BaseRegKey}"
+  DeleteRegKey /ifempty "${InstallScope}" "${CompanyRegKey}"
 
 SectionEnd
