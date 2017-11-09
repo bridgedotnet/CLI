@@ -287,4 +287,5 @@ __pycache__/
 *.odx.cs
 *.xsd.cs
 
+# NSIS ouput installer's executable
 installer/windows/*.exe
