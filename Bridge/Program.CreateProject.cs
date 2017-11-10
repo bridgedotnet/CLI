@@ -11,6 +11,74 @@ namespace Bridge.CLI
 {
     public partial class Program
     {
+        private static void InstallTemplate(string path)
+        {
+            var uri = new Uri(path);
+            var isFile = uri.IsFile;
+            var rootPath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
+            var templatesPath = Path.Combine(rootPath, Constants.TemplatesFolder);
+
+            if (isFile)
+            {
+                if (!File.Exists(path))
+                {
+                    Error("Template file doesn't exist");
+                    return;
+                }
+
+                ZipFile.ExtractToDirectory(path, templatesPath);
+            }
+            else
+            {
+                WriteLine("Downloading template ", false);
+                using (var spinner = new ConsoleSpinner())
+                {
+                    spinner.Start();
+
+                    var localFile = Path.GetTempFileName();
+                    WebClient client = new WebClient();
+                    client.DownloadFile(path, localFile);
+                    client.Dispose();
+                    ZipFile.ExtractToDirectory(localFile, templatesPath);
+                    File.Delete(localFile);
+                }
+            }
+
+            WriteLine($"Template has been installed");
+        }
+
+        private static void UninstallTemplate(string name)
+        {
+            var rootPath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
+            var templatesPath = Path.Combine(rootPath, Constants.TemplatesFolder);
+            var templatePath = Path.Combine(templatesPath, name);
+
+            if (Directory.Exists(templatePath))
+            {
+                Directory.Delete(templatePath, true);
+                WriteLine($"Template {name} has been uninstalled");
+            }
+            else
+            {
+                Error($"Template with name {name} doesn't exist");
+            }
+        }
+
+        private static void ShowTemplatesList()
+        {
+            var rootPath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
+            var templatesPath = Path.Combine(rootPath, Constants.TemplatesFolder);
+
+            if (Directory.Exists(templatesPath))
+            {
+                var tpls = Directory.GetDirectories(templatesPath, "*", SearchOption.TopDirectoryOnly);
+                foreach (var tpl in tpls)
+                {
+                    WriteLine(Path.GetFileName(tpl));
+                }
+            }
+        }
+
         private static void CreateProject(string folder, string template)
         {
             var rootPath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
@@ -93,11 +161,22 @@ namespace Bridge.CLI
             }
 
             Console.WriteLine();
-            Console.Write($"Installing {packageName}: ");
+            var msg = $"Installing {packageName}";
+            
+            if(msg.Length >= 26)
+            {
+                msg += "  ";
+            }
+            else
+            {
+                msg = msg.PadRight(26);
+            }
+
+            Console.Write(msg);
 
             if (Directory.Exists(Path.Combine(packagesFolder, name)))
             {
-                Warn("Skipped (already exists)");
+                Warn("skipped (already exists)");
 
                 return;
             }
@@ -147,11 +226,11 @@ namespace Bridge.CLI
 
                 if (exists)
                 {
-                    Warn("Skipped (already exists)");
+                    Warn("skipped (already exists)");
                 }
                 else
                 {
-                    Info("Done");
+                    Info("done");
 
                     if (!restore)
                     {
@@ -409,16 +488,23 @@ namespace Bridge.CLI
                     foreach (System.Xml.XmlNode node in nodes)
                     {
                         string id = node.Attributes["id"].Value;
-                        string version = node.Attributes["version"].Value;
-
-                        string packageDir = Path.Combine(packagesFolder, id + "." + version);
-
+                        var versionAttr = node.Attributes["version"];
+                        string version = versionAttr?.Value;
                         bool restore = false;
 
-                        if (!Directory.Exists(packageDir))
+                        if (version == null)
                         {
                             restore = true;
                         }
+                        else
+                        {
+                            string packageDir = Path.Combine(packagesFolder, id + "." + version);
+
+                            if (!Directory.Exists(packageDir))
+                            {
+                                restore = true;
+                            }
+                        }                        
 
                         if (restore)
                         {

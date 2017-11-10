@@ -34,8 +34,11 @@ namespace Bridge.CLI
 
         public void Stop()
         {
-            active = false;
-            Draw(' ');
+            if (active)
+            {
+                active = false;
+                ForceDraw(' ');                
+            }            
         }
 
         private void Spin()
@@ -50,6 +53,14 @@ namespace Bridge.CLI
         }
 
         private void Draw(char c)
+        {
+            if (active)
+            {
+                ForceDraw(c);
+            }            
+        }
+
+        private void ForceDraw(char c)
         {
             Console.SetCursorPosition(left, top);
             Console.Write(c);

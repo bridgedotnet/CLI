@@ -11,6 +11,11 @@
         public static readonly string AssembliesFolder = "tools";
 
         /// <summary>
+        /// Directory for CLI to look for Bridge core library (Bridge.dll).
+        /// </summary>
+        public static readonly string BridgeCoreFolder = "lib";
+
+        /// <summary>
         /// Directory for CLI to look for template projects for new projects installation.
         /// </summary>
         public static readonly string TemplatesFolder = "templates";

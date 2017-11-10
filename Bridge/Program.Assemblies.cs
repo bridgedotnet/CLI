@@ -56,7 +56,7 @@ namespace Bridge.CLI
 
             if (asmFile == null)
             {
-                asmFile = Path.Combine(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), Constants.AssembliesFolder), name);
+                asmFile = Path.Combine(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), Constants.BridgeCoreFolder), name);
             }
 
             return File.Exists(asmFile) ? asmFile : null;

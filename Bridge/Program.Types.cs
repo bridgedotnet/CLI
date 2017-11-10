@@ -53,7 +53,7 @@ namespace Bridge.CLI
             dynamic helper = System.Activator.CreateInstance(gtype, CreateLogger());
             var info = helper.ReadConfig("bridge.json", true, folder, bridgeOptions.ProjectProperties.Configuration);
 
-            if (!string.IsNullOrWhiteSpace(info.ReferencesPath))
+            if (info != null && !string.IsNullOrWhiteSpace(info.ReferencesPath))
             {
                 bridgeOptions.Lib = Path.Combine(Path.IsPathRooted(info.ReferencesPath) ? info.ReferencesPath : Path.Combine(folder, info.ReferencesPath), new DirectoryInfo(folder).Name + ".dll");
 

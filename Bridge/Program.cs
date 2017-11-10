@@ -18,8 +18,8 @@ namespace Bridge.CLI
 
         private static int Main(string[] args)
         {
-            //args = new string[] { "add", "package", "Retyped.dom" };
-            //var currentDir = @"C:\projects\Bridge\v1\Sandbox\FolderLib4\";
+            //args = new string[] { "new", "-i", @"C:\foto\Retyped.zip" };
+            //var currentDir = @"C:\projects\Bridge\v1\Sandbox\FolderLib5\";
             var currentDir = Environment.CurrentDirectory;
 
             CoreFolder = GetCoreFolder(currentDir);
@@ -57,65 +57,79 @@ namespace Bridge.CLI
                 return 0;
             }
 
+            if (bridgeOptions.Rebuild && File.Exists(bridgeOptions.Lib))
+            {
+                File.Delete(bridgeOptions.Lib);
+            }
+
             if (bridgeOptions.BridgeLocation == null)
             {
                 bridgeOptions.BridgeLocation = GetBridgeLocation(currentDir);
             }
 
-            var logger = CreateLogger();
-            dynamic processor = CreateTranslatorProcessor(bridgeOptions, logger);
-
-            processor.PreProcess();
-
-            try
+            Console.Write("Building ");
+            using (var spinner = new ConsoleSpinner())
             {
-                processor.Process();
-                var outputPath = processor.PostProcess();
+                spinner.Start();
+                var logger = CreateLogger();
+                dynamic processor = CreateTranslatorProcessor(bridgeOptions, logger);
 
-                if (run)
+                processor.PreProcess();
+
+                try
                 {
-                    var htmlFile = Path.Combine(outputPath, "index.html");
+                    processor.Process();
+                    var outputPath = processor.PostProcess();
 
-                    if (File.Exists(htmlFile))
+                    if (run)
                     {
-                        System.Diagnostics.Process.Start(htmlFile);
+                        var htmlFile = Path.Combine(outputPath, "index.html");
+
+                        if (File.Exists(htmlFile))
+                        {
+                            System.Diagnostics.Process.Start(htmlFile);
+                        }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                var exceptionType = ex.GetType();
-
-                if (GetEmitterException().IsAssignableFrom(exceptionType))
+                catch (Exception ex)
                 {
-                    dynamic dex = ex;
-                    Error(string.Format("Bridge.NET Compiler error: {2} ({3}, {4}) {0} {1}", ex.Message, ex.StackTrace, dex.FileName, dex.StartLine, dex.StartColumn, dex.EndLine, dex.EndColumn));
+                    spinner.Stop();
 
+                    var exceptionType = ex.GetType();
+
+                    if (GetEmitterException().IsAssignableFrom(exceptionType))
+                    {
+                        dynamic dex = ex;
+                        Error(string.Format("Bridge.NET Compiler error: {2} ({3}, {4}) {0} {1}", ex.Message, ex.StackTrace, dex.FileName, dex.StartLine, dex.StartColumn));
+
+                        return 1;
+                    }
+
+                    var ee = processor.Translator != null ? processor.Translator.CreateExceptionFromLastNode() : null;
+
+                    if (ee != null)
+                    {
+                        Error(string.Format("Bridge.NET Compiler error: {2} ({3}, {4}) {0} {1}", ex.Message, ex.StackTrace, ee.FileName, ee.StartLine, ee.StartColumn));
+                    }
+                    else
+                    {
+                        // Iteractively print inner exceptions
+                        var ine = ex;
+                        var elvl = 0;
+
+                        while (ine != null)
+                        {
+                            Error(string.Format("Bridge.NET Compiler error: exception level: {0} - {1}\nStack trace:\n{2}", elvl++, ine.Message, ine.StackTrace));
+                            ine = ine.InnerException;
+                        }
+                    }
+
+                    
                     return 1;
                 }
-
-                var ee = processor.Translator != null ? processor.Translator.CreateExceptionFromLastNode() : null;
-
-                if (ee != null)
-                {
-                    Error(string.Format("Bridge.NET Compiler error: {2} ({3}, {4}) {0} {1}", ex.Message, ex.StackTrace, ee.FileName, ee.StartLine, ee.StartColumn, ee.EndLine, ee.EndColumn));
-                }
-                else
-                {
-                    // Iteractively print inner exceptions
-                    var ine = ex;
-                    var elvl = 0;
-
-                    while (ine != null)
-                    {
-                        Error(string.Format("Bridge.NET Compiler error: exception level: {0} - {1}\nStack trace:\n{2}", elvl++, ine.Message, ine.StackTrace));
-                        ine = ine.InnerException;
-                    }
-                }
-
-                return 1;
             }
 
+            Console.Write(Path.GetFileName(currentDir) + " done");
             return 0;
         }
 
@@ -318,27 +332,9 @@ Options:
                         return bridgeOptions;
 
                     case "restore":
-                        string restore_entity = null;
-
-                        if (args.Length > (i + 1))
-                        {
-                            restore_entity = args[++i];
-                        }
-
-                        switch (restore_entity)
-                        {
-                            case "packages":
-                                RestorePackages(currentDir);
-                                break;
-
-                            default:
-                                throw new Exception($"{restore_entity} is unknown entity for restore.");
-                        }
-
+                        RestorePackages(currentDir);
                         skip = true;
-
                         return bridgeOptions;
-
                     case "build":
                         bridgeOptions.Rebuild = true;
                         bridgeOptions.Folder = currentDir;
@@ -355,14 +351,50 @@ Options:
 
                     case "new":
                         string tpl = "classlib";
+                        string arg = null;
+                        skip = true;
 
-                        if (args.Length > (i + 1) && !args[i + 1].StartsWith("-"))
+                        if (args.Length > (i + 1))
                         {
-                            tpl = args[++i];
+                            arg = args[++i];
+
+                            switch(arg)
+                            {
+                                case "-h":
+                                case "-help":
+                                    ShowNewCommandHelp();
+                                    return bridgeOptions;
+                                case "-l":
+                                case "-list":
+                                    ShowTemplatesList();
+                                    return bridgeOptions;
+                                case "-i":
+                                case "-install":
+                                    if (args.Length <= (i + 1))
+                                    {
+                                        Error("Please define path to new template");
+                                        return bridgeOptions;
+                                    }
+
+                                    InstallTemplate(args[++i]);
+                                    return bridgeOptions;
+                                case "-u":
+                                case "-uninstall":
+                                    if (args.Length <= (i + 1))
+                                    {
+                                        Error("Please define template's name to uninstall");
+                                        return bridgeOptions;
+                                    }
+
+                                    UninstallTemplate(args[++i]);
+                                    return bridgeOptions;
+                                default:
+                                    tpl = arg;
+                                    break;
+                            }                            
                         }
 
                         CreateProject(currentDir, tpl);
-                        skip = true;
 
                         return bridgeOptions;
 
@@ -431,27 +463,22 @@ Options:
 
                     case "-S":
                     case "--settings":
-                        var error = ParseProjectProperties(bridgeOptions, args[++i]);
+                        if (args.Length > (i + 1))
+                        {
+                            var next = args[i + 1];
 
-                        // Add --settings --help option
-/*
-  Accepted Names:
-    AssemblyName
-    CheckForOverflowUnderflow
-    Configuration
-    DefineConstants
-    OutputPath
-    OutDir
-    OutputType
-    Platform
-    RootNamespace
+                            if (next == "-h" || next == "-help")
+                            {
+                                i++;
+                                ShowSettingsHelp();
+                                skip = true;
 
-  Example: 
-    -S name1: value1,name2: value2
+                                return bridgeOptions; // success. Asked for help. Help provided
+                            }
+                        }
+                        
 
-  Note:
-    Options - c, -P and - D have priority over - S
-*/
+                        var error = args.Length > (i + 1) ? ParseProjectProperties(bridgeOptions, args[++i]) : "No settings are provided";
 
                         if (error != null)
                         {
@@ -647,6 +674,54 @@ Options:
             }
 
             return bridgeOptions;
+        }
+
+        private static void ShowNewCommandHelp()
+        {
+            Console.WriteLine(@"Usage: 
+  bridge new [options]
+
+
+Options:
+  -h, --help          Displays help for this command.
+  -l, --list          Lists all templates.
+  -n, --name          The name for the output being created. If no name is specified, the name of the current directory is used.
+  -o, --output        Location to place the generated output.
+  -i, --install       Installs a template.
+  -u, --uninstall     Uninstalls a template.
+
+
+Templates          Short Name          Description
+----------------------------------------------------------------------------
+Class Library      classlib            New C# Class Library project.
+Class File         class               New .cs file.
+
+
+Examples:
+    bridge new               New project using the default template.
+    bridge new classlib      New project using classlib template.
+    bridge new -o Demo1      New project in new Demo1 folder.
+    bridge new --help        Display help.");
+        }
+
+        private static void ShowSettingsHelp()
+        {
+            Console.WriteLine(@"Accepted Names:
+    AssemblyName
+    CheckForOverflowUnderflow
+    Configuration
+    DefineConstants
+    OutputPath
+    OutDir
+    OutputType
+    Platform
+    RootNamespace
+
+  Example: 
+    -S name1: value1,name2: value2
+
+  Note:
+    Options - c, -P and - D have priority over - S");
         }
 
         private static bool IsPropertyExist(dynamic obj, string name)
