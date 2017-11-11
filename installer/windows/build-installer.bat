@@ -26,7 +26,7 @@ if "%Configuration%"=="Release" (
    "!nsisdir!\makensis.exe" "..\..\..\installer\windows\bridge-installer.nsi"
    if !ERRORLEVEL! neq 0 (
     set exit_status=!ERRORLEVEL!
-    echo *** Error: Unable to build Windows Installer package. makensis.exe returned exit status !ERRORLEVEL!.
+    echo *** Error: Unable to build Windows Installer package. makensis.exe returned exit status !exit_status!.
    ) else (
     echo Moving Bridge CLI installer to %CD%
     move ..\..\..\installer\windows\bridge-*.exe .
