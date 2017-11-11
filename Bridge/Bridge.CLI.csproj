@@ -76,7 +76,7 @@
     <Content Include="bridgedotnet-32x32.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup Condition="$(OS) != Unix">
+  <PropertyGroup Condition="'$(OS)' != 'Unix'">
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <PostBuildEvent>:: Post-build event commands
 XCOPY "$(ProjectDir).build\templates" "$(TargetDir)\templates\" /E /Y
@@ -86,25 +86,10 @@ move /-y "$(TargetDir)\bridge.pdb" "$(TargetDir)\tools\"
 
 "$(SolutionDir)installer\windows\build-installer.bat" "$(Configuration)"</PostBuildEvent>
   </PropertyGroup>
-  <PropertyGroup Condition="$(OS) == Unix">
+  <PropertyGroup Condition="'$(OS)' == 'Unix'">
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <PostBuildEvent># Post-build event commands
-cpargs=dpvr
-if [ "$(uname)" == "Darwin" ]; then
- cpargs=pR
-fi
-mkdir -p "$(TargetDir)templates"
-cp -${cpargs} "$(ProjectDir).build/templates" "$(TargetDir)templates/."
-mkdir -p "$(TargetDir)tools"
-cp -${cpargs} "$(SolutionDir)packages/Bridge.Min.16.5.0/tools" "$(TargetDir)tools/"
-cp -${cpargs} "$(SolutionDir)packages/Bridge.Core.16.5.0/lib/net40" "$(TargetDir)/lib/."
-mv "$(TargetDir)bridge.pdb" "$(TargetDir)tools/."
-
-if [ "${uname}" == "Darwin" ]; then
- echo "Should make OS X .pkg."
-else
- echo "Should make some sort of linux installer."
-fi
+"$(ProjectDir)unix-deploy.sh" "$(ProjectDir)" "$(TargetDir)" "$(SolutionDir)"
     </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
