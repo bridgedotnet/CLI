@@ -3,6 +3,7 @@
   !define CompanyName "Object.NET"
   !define ProductName "Bridge.NET CLI"
   !define ProductSite "http://bridge.net/"
+  !define ProductReadmeURL "https://github.com/bridgedotnet/CLI#bridge-cli"
   !define BridgeExec "bridge.exe"
   !define BridgeUninst "bridge-uninstall.exe"
   !define Version "16.5.0"
@@ -41,9 +42,10 @@
 ;General
 
   ;Name and file
-  Name "Bridge.NET CLI"
+  Name "${ProductName} v${Version}"
   OutFile "bridge-${Version}-install.exe"
 
+  BrandingText "${ProductName} v${Version} Setup"
   ;Default installation folder
   InstallDir "$PROGRAMFILES\${CompanyName}\${ProductName}"
 
@@ -61,11 +63,19 @@
   !define MUI_ABORTWARNING
   !define MUI_ICON "..\..\Bridge\bridgedotnet-32x32.ico"
   !define MUI_UNICON "..\..\Bridge\bridgedotnet-32x32.ico"
+  !define MUI_WELCOMEFINISHPAGE_BITMAP "images\welcome.bmp"
+  !define MUI_HEADERIMAGE
+  !define MUI_HEADERIMAGE_BITMAP "images\top.bmp"
 
 ;--------------------------------
 ;Pages
 
+  !define MUI_WELCOMEPAGE_TITLE_3LINES
+  !insertmacro MUI_PAGE_WELCOME
+
   !insertmacro MUI_PAGE_LICENSE "..\..\LICENSE"
+
+  !define MUI_COMPONENTSPAGE_SMALLDESC
   !insertmacro MUI_PAGE_COMPONENTS
 
   !define MUI_PAGE_CUSTOMFUNCTION_SHOW AskOrReuseDir
@@ -75,6 +85,12 @@
 
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
+
+  !define MUI_FINISHPAGE_LINK "View ${ProductName} Readme"
+  !define MUI_FINISHPAGE_LINK_LOCATION "${ProductReadmeURL}"
+  !define MUI_FINISHPAGE_TITLE_3LINES
+  !define MUI_WELCOMEFINISHPAGE_CUSTOMFUNCTION_INIT DisableBack
+  !insertmacro MUI_PAGE_FINISH
 
 ;--------------------------------
 ;Makes the target directory selection read-only if Bridge has already been
