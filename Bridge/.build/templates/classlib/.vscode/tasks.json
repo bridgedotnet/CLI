@@ -13,10 +13,6 @@
       "group": {
         "kind": "build",
         "isDefault": true
-      },
-      "presentation": {
-        "reveal": "never",
-        "panel": "shared"
       }
     }
   ]
