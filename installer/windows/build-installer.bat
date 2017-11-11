@@ -1,5 +1,6 @@
 @echo off
 
+echo "Starting build-installer.bat script."
 :: This batch script will build windows installer if Bridge CLI was built in
 :: Release mode.
 :: Usage: build-installer.bat $(Configuration)
@@ -9,8 +10,8 @@ setlocal ENABLEDELAYEDEXPANSION
 
 :: Cleanup environment variables
 set nsisdir=
-set Configuration=
 
+set exit_status=0
 set Configuration=%~1
 if "%Configuration%"=="Release" (
  for /f "tokens=2*" %%A in ('reg query "HKLM\SOFTWARE\NSIS" /v "" /reg:32 2^>nul ^| find "REG_SZ"') do (
@@ -24,18 +25,26 @@ if "%Configuration%"=="Release" (
    :: CLI\Bridge\bin\Release
    "!nsisdir!\makensis.exe" "..\..\..\installer\windows\bridge-installer.nsi"
    if !ERRORLEVEL! neq 0 (
-    echo *** Error: makensis.exe returned error status !ERRORLEVEL!.
+    set exit_status=!ERRORLEVEL!
+    echo *** Error: Unable to build Windows Installer package. makensis.exe returned exit status !ERRORLEVEL!.
    ) else (
     echo Moving Bridge CLI installer to %CD%
     move ..\..\..\installer\windows\bridge-*.exe .
+    if !ERRORLEVEL! neq 0 (
+     set exit_status=!ERRORLEVEL!
+     echo *** Error: Unable to move bridge installer package from '..\..\..\installer\windows' to '%CD%'.
+    )
    )
   ) else (
-   echo NSIS is installed but makensis.exe is not available.
-   exit /b 1
+   echo *** Error: NSIS is installed but makensis.exe is not available.
+   set exit_status=1
   )
  ) else (
-  echo NSIS is not installed. Skipping Bridge CLI installer build.
+  echo *** Warning: NSIS is not installed. Skipping Bridge CLI installer build. Download latest NSIS version from http://nsis.sf.net/.
  )
 ) else (
- echo Will only build Bridge Installer when built in Release mode.
+ echo *** Warning: Will only build Bridge CLI Installer when built in Release mode.
 )
+
+echo "Finished build-installer.bat script."
+exit /b !exit_status!
