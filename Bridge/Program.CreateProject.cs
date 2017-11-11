@@ -163,17 +163,15 @@ namespace Bridge.CLI
                 File.Delete(localFile);
             }
 
-            Console.WriteLine();
-
             var msg = $"Installing {packageName}";
-            
-            if (msg.Length >= 26)
+
+            if (msg.Length >= 27)
             {
                 msg += "  ";
             }
             else
             {
-                msg = msg.PadRight(26);
+                msg = msg.PadRight(28);
             }
 
             Console.Write(msg);
