@@ -68,6 +68,7 @@ namespace Bridge.CLI
             }
 
             Console.Write("Building ");
+
             using (var spinner = new ConsoleSpinner())
             {
                 spinner.Start();
@@ -130,6 +131,7 @@ namespace Bridge.CLI
             }
 
             Console.Write(Path.GetFileName(currentDir) + " done");
+
             return 0;
         }
 
@@ -174,29 +176,29 @@ Usage:
 
 
 Commands:
-  new                         Initialize a Bridge C# Class Library project.
-  build                       Builds the Bridge project.
-  run                         Compiles and immediately runs index.html file.
-  restore                     Restore dependencies specified in the project.
-  add package <name>          Add package to project
-  remove package <name>       Remove package from project
+  new                        Initialize a Bridge C# Class Library project.
+  build                      Builds the Bridge project.
+  run                        Compiles and immediately runs index.html file.
+  restore                    Restore dependencies specified in the project.
+  add package <name>         Add package to project
+  remove package <name>      Remove package from project
 
 
 Options:
-  -c, --configuration <name>  Configuration name (Debug/Release etc).
-  -D, --define <list>         Semicolon-delimited list of project constants.
-  -f, --folder <path>         Builder working directory relative to current dir.
-  -h, --help                  Display help.
-  -p, --project <path>        The .csproj file location.
-  -P, --platform <name>       Platform name (AnyCPU etc).
-  -r, --rebuild               Force assembly rebuilding.
-  -R, --recursive             Recursively search for .cs source files.
-  -s, --source <file>         Source files name/pattern [default: *.cs].
-  -S, --settings <name:value> Comma-delimited list of project settings.
-  -v, --version               Display version.
-  --nocore                    Do not extract core javascript files.
-  --norecursive               Non-recursive search for .cs source files.
-  --notimestamp               Do not show timestamp in log messages.
+  -c, --configuration <name> Configuration name (Debug/Release etc).
+  -D, --define <list>        Semicolon-delimited list of project constants.
+  -f, --folder <path>        Builder working directory relative to current dir.
+  -h, --help                 Display help.
+  -p, --project <path>       The .csproj file location.
+  -P, --platform <name>      Platform name (AnyCPU etc).
+  -r, --rebuild              Force assembly rebuilding.
+  -R, --recursive            Recursively search for .cs source files.
+  -s, --source <file>        Source files name/pattern [default: *.cs].
+  -S, --settings <name:val>  Comma-delimited list of project settings.
+  -v, --version              Display version.
+  --nocore                   Do not extract core javascript files.
+  --norecursive              Non-recursive search for .cs source files.
+  --notimestamp              Do not show timestamp in log messages.
 
 
   More information on getting started with
@@ -693,10 +695,10 @@ Options:
 
 
 Options:
-  -h, --help          Displays help for this command.
-  -l, --list          Lists all templates.
-  -i, --install       Installs a template.
-  -u, --uninstall     Uninstalls a template.
+  -h, --help                 Displays help for this command.
+  -l, --list                 Lists all templates.
+  -i, --install              Installs a template.
+  -u, --uninstall            Uninstalls a template.
 
 
 Templates          Short Name          Description
