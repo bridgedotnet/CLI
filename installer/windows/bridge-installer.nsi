@@ -6,13 +6,15 @@
   !define ProductReadmeURL "https://github.com/bridgedotnet/CLI#bridge-cli"
   !define BridgeExec "bridge.exe"
   !define BridgeUninst "bridge-uninstall.exe"
-  !define Version "16.5.0"
   !define CompanyRegKey "Software\${CompanyName}"
   !define BaseRegKey "${CompanyRegKey}\${ProductName}"
   !define Build "Release"
   !define AssembliesPath "tools"
   !define TemplatesPath "Templates"
   !define SrcPath "..\..\Bridge\bin\${Build}"
+
+  !getdllversion "${SrcPath}/${BridgeExec}" ver_fields_
+  !define Version "${ver_fields_1}.${ver_fields_2}.${ver_fields_3}"
 
   !define SysUninstallKey "Software\Microsoft\Windows\CurrentVersion\Uninstall\${ProductName}"
 
