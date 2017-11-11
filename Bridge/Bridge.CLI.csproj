@@ -42,6 +42,9 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>bridgedotnet-32x32.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -68,6 +71,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include=".build\templates\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="bridgedotnet-32x32.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
