@@ -16,7 +16,6 @@ if "%Configuration%"=="Release" (
  for /f "tokens=2*" %%A in ('reg query "HKLM\SOFTWARE\NSIS" /v "" /reg:32 2^>nul ^| find "REG_SZ"') do (
   set nsisdir=%%B
  )
- echo fui
  if defined nsisdir (
   echo NSIS installed at !nsisdir!
   if exist "!nsisdir!\makensis.exe" (
