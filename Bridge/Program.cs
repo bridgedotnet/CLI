@@ -335,6 +335,7 @@ Options:
                     case "restore":
                         RestorePackages(currentDir);
                         skip = true;
+
                         return bridgeOptions;
                     case "build":
                         bridgeOptions.Rebuild = true;
@@ -362,20 +363,21 @@ Options:
                             switch(arg)
                             {
                                 case "-h":
-                                case "-help":
+                                case "--help":
                                     ShowNewCommandHelp();
 
                                     return bridgeOptions;
                                 case "-l":
-                                case "-list":
+                                case "--list":
                                     ShowTemplatesList();
 
                                     return bridgeOptions;
                                 case "-i":
-                                case "-install":
+                                case "--install":
                                     if (args.Length <= (i + 1))
                                     {
                                         Error("Please define path to new template");
+
                                         return bridgeOptions;
                                     }
 
@@ -383,10 +385,11 @@ Options:
 
                                     return bridgeOptions;
                                 case "-u":
-                                case "-uninstall":
+                                case "--uninstall":
                                     if (args.Length <= (i + 1))
                                     {
                                         Error("Please define template's name to uninstall");
+
                                         return bridgeOptions;
                                     }
 
@@ -450,8 +453,8 @@ Options:
 
                         break;
 
-                    case "--rebuild":
                     case "-r":
+                    case "--rebuild":
                         bridgeOptions.Rebuild = true;
 
                         break;
