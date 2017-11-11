@@ -2,7 +2,7 @@
 ;Object.NET's Bridge.NET CLI Installer
   !define CompanyName "Object.NET"
   !define ProductName "Bridge.NET CLI"
-  !define ProductSite "http://bridge.net/"
+  !define ProductSite "https://bridge.net/"
   !define ProductReadmeURL "https://github.com/bridgedotnet/CLI#bridge-cli"
   !define BridgeExec "bridge.exe"
   !define BridgeUninst "bridge-uninstall.exe"
@@ -42,10 +42,10 @@
 ;General
 
   ;Name and file
-  Name "${ProductName} v${Version}"
+  Name "${ProductName}"
   OutFile "bridge-${Version}-install.exe"
 
-  BrandingText "${ProductName} v${Version} Setup"
+  BrandingText "${ProductName} Setup"
   ;Default installation folder
   InstallDir "$PROGRAMFILES\${CompanyName}\${ProductName}"
 
