@@ -45,7 +45,7 @@
 
   ;Name and file
   Name "${ProductName}"
-  OutFile "bridge-${Version}-install.exe"
+  OutFile "bridge-cli.exe"
 
   BrandingText "${ProductName} Setup"
 

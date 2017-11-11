@@ -29,7 +29,7 @@ if "%Configuration%"=="Release" (
     echo *** Error: Unable to build Windows Installer package. makensis.exe returned exit status !exit_status!.
    ) else (
     echo Moving Bridge CLI installer to %CD%
-    move ..\..\..\installer\windows\bridge-*.exe .
+    move ..\..\..\installer\windows\bridge-cli.exe .
     if !ERRORLEVEL! neq 0 (
      set exit_status=!ERRORLEVEL!
      echo *** Error: Unable to move bridge installer package from '..\..\..\installer\windows' to '%CD%'.
