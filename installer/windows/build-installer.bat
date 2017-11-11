@@ -1,6 +1,6 @@
 @echo off
 
-echo "Starting build-installer.bat script."
+echo Starting build-installer.bat script.
 :: This batch script will build windows installer if Bridge CLI was built in
 :: Release mode.
 :: Usage: build-installer.bat $(Configuration)
@@ -46,5 +46,5 @@ if "%Configuration%"=="Release" (
  echo *** Warning: Will only build Bridge CLI Installer when built in Release mode.
 )
 
-echo "Finished build-installer.bat script."
+echo Finished build-installer.bat script.
 exit /b !exit_status!
