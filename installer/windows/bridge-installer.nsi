@@ -2,6 +2,7 @@
 ;Object.NET's Bridge.NET CLI Installer
   !define CompanyName "Object.NET"
   !define ProductName "Bridge.NET CLI"
+  !define ProductSite "http://bridge.net/"
   !define BridgeExec "bridge.exe"
   !define BridgeUninst "bridge-uninstall.exe"
   !define Version "16.5.0"
@@ -58,6 +59,8 @@
 ;Interface Settings
 
   !define MUI_ABORTWARNING
+  !define MUI_ICON "..\..\Bridge\bridgedotnet-32x32.ico"
+  !define MUI_UNICON "..\..\Bridge\bridgedotnet-32x32.ico"
 
 ;--------------------------------
 ;Pages
@@ -121,12 +124,23 @@ Section "${ProductName} v${Version}" InstallBridge
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\${BridgeUninst}"
 
+  ;Windows Add/Remove programs entry
   WriteRegStr "${RegistryRoot}" "${SysUninstallKey}" \
-    "DisplayName" "${ProductName} v${Version}"
+    "DisplayIcon" "$INSTDIR\${BridgeExec}"
+  WriteRegStr "${RegistryRoot}" "${SysUninstallKey}" \
+    "DisplayName" "${ProductName}"
+  WriteRegStr "${RegistryRoot}" "${SysUninstallKey}" \
+    "DisplayVersion" "${Version}"
+  WriteRegStr "${RegistryRoot}" "${SysUninstallKey}" \
+    "InstallLocation" "$INSTDIR"
+  WriteRegStr "${RegistryRoot}" "${SysUninstallKey}" \
+    "Publisher" "${CompanyName}"
+  WriteRegStr "${RegistryRoot}" "${SysUninstallKey}" \
+    "QuietUninstallString" "$\"$INSTDIR\${BridgeUninst}$\" /S"
   WriteRegStr "${RegistryRoot}" "${SysUninstallKey}" \
     "UninstallString" "$\"$INSTDIR\${BridgeUninst}$\""
   WriteRegStr "${RegistryRoot}" "${SysUninstallKey}" \
-    "QuietUninstallString" "$\"$INSTDIR\${BridgeUninst}$\" /S"
+    "UrlInfoAbout" "${ProductSite}"
 
 SectionEnd
 
@@ -158,15 +172,12 @@ SectionEnd
 Section "Uninstall"
 
   Delete "$INSTDIR\${AssembliesPath}\*"
-
   RMDir "$INSTDIR\${AssembliesPath}"
 
   RMDir /r "$INSTDIR\${TemplatesPath}"
 
   Delete "$INSTDIR\${BridgeExec}"
-
   Delete "$INSTDIR\${BridgeUninst}"
-
   RMDir "$INSTDIR"
 
   ;Removes the Object.NET folder if it is left empty
@@ -189,6 +200,6 @@ done:
   DeleteRegKey /ifempty "${RegistryRoot}" "${CompanyRegKey}"
 
   ;The windows uninstall entry will be removed for good.
-  DeleteRegKey "${RegistryRoot}" "${SysUninstallKey}" \
+  DeleteRegKey "${RegistryRoot}" "${SysUninstallKey}"
 
 SectionEnd
