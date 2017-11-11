@@ -17,7 +17,7 @@
   !define SysUninstallKey "Software\Microsoft\Windows\CurrentVersion\Uninstall\${ProductName}"
 
   ; Whether to install to the current user or for the whole machine
-  !define InstallScope "user" ; user or machine
+  !define InstallScope "machine" ; user or machine
 
   !if ${InstallScope} == "machine"
     !define RegistryRoot "HKLM"
@@ -46,14 +46,19 @@
   OutFile "bridge-${Version}-install.exe"
 
   BrandingText "${ProductName} Setup"
+
   ;Default installation folder
-  InstallDir "$PROGRAMFILES\${CompanyName}\${ProductName}"
+  !if ${InstallScope} == "machine"
+    InstallDir "$PROGRAMFILES\${CompanyName}\${ProductName}"
+    ;Request application privileges for Windows Vista and newer
+    RequestExecutionLevel admin
+  !else
+    InstallDir "$APPDATA\${CompanyName}\${ProductName}"
+    RequestExecutionLevel user
+  !endif
 
   ;Get installation folder from registry if available
   InstallDirRegKey "${RegistryRoot}" "${BaseRegKey}" ""
-
-  ;Request application privileges for Windows Vista and newer
-  RequestExecutionLevel admin
 
   SetCompressor /solid lzma
 
