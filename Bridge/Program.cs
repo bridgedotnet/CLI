@@ -695,8 +695,6 @@ Options:
 Options:
   -h, --help          Displays help for this command.
   -l, --list          Lists all templates.
-  -n, --name          The name for the output being created. If no name is specified, the name of the current directory is used.
-  -o, --output        Location to place the generated output.
   -i, --install       Installs a template.
   -u, --uninstall     Uninstalls a template.
 
@@ -704,13 +702,11 @@ Options:
 Templates          Short Name          Description
 ----------------------------------------------------------------------------
 Class Library      classlib            New C# Class Library project.
-Class File         class               New .cs file.
 
 
 Examples:
     bridge new               New project using the default template.
     bridge new classlib      New project using classlib template.
-    bridge new -o Demo1      New project in new Demo1 folder.
     bridge new --help        Display help.");
         }
 
