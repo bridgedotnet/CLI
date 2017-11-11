@@ -31,11 +31,13 @@ namespace Bridge.CLI
             else
             {
                 WriteLine("Downloading template ", false);
+
                 using (var spinner = new ConsoleSpinner())
                 {
                     spinner.Start();
 
                     var localFile = Path.GetTempFileName();
+
                     WebClient client = new WebClient();
                     client.DownloadFile(path, localFile);
                     client.Dispose();
@@ -72,6 +74,7 @@ namespace Bridge.CLI
             if (Directory.Exists(templatesPath))
             {
                 var tpls = Directory.GetDirectories(templatesPath, "*", SearchOption.TopDirectoryOnly);
+
                 foreach (var tpl in tpls)
                 {
                     WriteLine(Path.GetFileName(tpl));
@@ -161,9 +164,10 @@ namespace Bridge.CLI
             }
 
             Console.WriteLine();
+
             var msg = $"Installing {packageName}";
             
-            if(msg.Length >= 26)
+            if (msg.Length >= 26)
             {
                 msg += "  ";
             }

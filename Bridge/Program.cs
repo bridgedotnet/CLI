@@ -137,6 +137,7 @@ namespace Bridge.CLI
         {
             var installedVersion = GetCompilerVersion().ProductVersion;
             var minVersion = "16.5.0";
+
             if (new Version(minVersion).CompareTo(new Version(installedVersion)) > 0)
             {
                 Error($"Minimum required version of Bridge compiler is {minVersion}. Your version: {installedVersion}");
@@ -363,10 +364,12 @@ Options:
                                 case "-h":
                                 case "-help":
                                     ShowNewCommandHelp();
+
                                     return bridgeOptions;
                                 case "-l":
                                 case "-list":
                                     ShowTemplatesList();
+
                                     return bridgeOptions;
                                 case "-i":
                                 case "-install":
@@ -377,6 +380,7 @@ Options:
                                     }
 
                                     InstallTemplate(args[++i]);
+
                                     return bridgeOptions;
                                 case "-u":
                                 case "-uninstall":
@@ -387,9 +391,11 @@ Options:
                                     }
 
                                     UninstallTemplate(args[++i]);
+
                                     return bridgeOptions;
                                 default:
                                     tpl = arg;
+
                                     break;
                             }                            
                         }
@@ -651,6 +657,7 @@ Options:
                                     bridgeOptions.ReferencesPath = checkFolder;
                                     folder = checkFolder;
                                     found = true;
+
                                     break;
                                 }
                             }
@@ -787,6 +794,7 @@ Examples:
                 if (settings.ContainsKey(name))
                 {
                     value = settings[name];
+
                     continue;
                 }
 
