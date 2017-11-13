@@ -9,7 +9,9 @@
   !define CompanyRegKey "Software\${CompanyName}"
   !define BaseRegKey "${CompanyRegKey}\${ProductName}"
   !define Build "Release"
+
   !define AssembliesPath "tools"
+  !define BridgeLibsPath "lib"
   !define TemplatesPath "Templates"
   !define SrcPath "..\..\Bridge\bin\${Build}"
 
@@ -129,16 +131,25 @@ FunctionEnd
 
 Section "${ProductName} v${Version}" InstallBridge
 
+  ;Bridge executable file.
   SetOutPath "$INSTDIR"
-
   File "${SrcPath}\${BridgeExec}"
 
+  ;Copy all files within the asselbies (tools) path, regardless of how many
+  ;and their names. Do not recurse thru subdirectories.
   SetOutPath "$INSTDIR\${AssembliesPath}\"
-
   File "${SrcPath}\${AssembliesPath}\*"
 
-  SetOutPath "$INSTDIR\${TemplatesPath}\"
+  ;For lib\, just its main folder and lib\pdb
+  SetOutPath "$INSTDIR\${BridgeLibsPath}\"
+  File "${SrcPath}\${BridgeLibsPath}\Bridge.dll"
+  File "${SrcPath}\${BridgeLibsPath}\Bridge.xml"
 
+  SetOutPath "$INSTDIR\${BridgeLibsPath}\pdb\"
+  File "${SrcPath}\${BridgeLibsPath}\pdb\Bridge.pdb"
+
+  ;Whole directory and subdirs
+  SetOutPath "$INSTDIR\${TemplatesPath}\"
   File /r "${SrcPath}\${TemplatesPath}\*"
 
   ;Store installation folder
@@ -196,6 +207,13 @@ Section "Uninstall"
 
   Delete "$INSTDIR\${AssembliesPath}\*"
   RMDir "$INSTDIR\${AssembliesPath}"
+
+  ;libs directory
+  Delete "$INSTDIR\${BridgeLibsPath}\pdb\Bridge.pdb"
+  Delete "$INSTDIR\${BridgeLibsPath}\Bridge.dll"
+  Delete "$INSTDIR\${BridgeLibsPath}\Bridge.xml"
+  RMDir "$INSTDIR\${BridgeLibsPath}\pdb"
+  RMDir "$INSTDIR\${BridgeLibsPath}"
 
   RMDir /r "$INSTDIR\${TemplatesPath}"
 
