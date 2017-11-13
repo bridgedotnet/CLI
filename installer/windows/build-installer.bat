@@ -21,8 +21,8 @@ if "%Configuration%"=="Release" (
   echo NSIS installed at !nsisdir!
   if exist "!nsisdir!\makensis.exe" (
 
-   :: assuming the script will be called from post-build directory, that is
-   :: CLI\Bridge\bin\Release
+   rem assuming the script will be called from post-build directory, that is
+   rem CLI\Bridge\bin\Release
    "!nsisdir!\makensis.exe" "..\..\..\installer\windows\bridge-installer.nsi"
    if !ERRORLEVEL! neq 0 (
     set exit_status=!ERRORLEVEL!
