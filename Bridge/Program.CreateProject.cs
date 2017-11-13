@@ -13,36 +13,62 @@ namespace Bridge.CLI
     {
         private static void InstallTemplate(string path)
         {
-            var uri = new Uri(path);
-            var isFile = uri.IsFile;
             var rootPath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
             var templatesPath = Path.Combine(rootPath, Constants.TemplatesFolder);
 
-            if (isFile)
+            if (File.Exists(path))
             {
-                if (!File.Exists(path))
+                try
+                {
+                    ZipFile.ExtractToDirectory(path, templatesPath);
+                }
+                catch (Exception e)
+                {
+                    Error($"The error during template's archive extraction: {e.Message}");
+                    return;
+                }
+            }
+            else
+            {
+                var isFile = true;
+                try
+                {
+                    var uri = new Uri(path);
+                    isFile = uri.IsFile;
+                }
+                catch (Exception)
+                {
+                }
+
+                if (isFile)
                 {
                     Error("Template file doesn't exist");
                     return;
                 }
 
-                ZipFile.ExtractToDirectory(path, templatesPath);
-            }
-            else
-            {
                 WriteLine("Downloading template ", false);
                 using (var spinner = new ConsoleSpinner())
                 {
                     spinner.Start();
 
-                    var localFile = Path.GetTempFileName();
-                    WebClient client = new WebClient();
-                    client.DownloadFile(path, localFile);
-                    client.Dispose();
-                    ZipFile.ExtractToDirectory(localFile, templatesPath);
-                    File.Delete(localFile);
+                    try
+                    {
+                        var localFile = Path.GetTempFileName();
+                        WebClient client = new WebClient();
+                        client.DownloadFile(path, localFile);
+                        client.Dispose();
+                        ZipFile.ExtractToDirectory(localFile, templatesPath);
+                        File.Delete(localFile);
+                        WriteLine("done");
+                        return;
+                    }
+                    catch (Exception e)
+                    {
+                        Error($"The download error: {e.Message}");
+                        return;
+                    }                    
                 }
-            }
+            }            
 
             WriteLine($"Template has been installed");
         }
@@ -55,8 +81,15 @@ namespace Bridge.CLI
 
             if (Directory.Exists(templatePath))
             {
-                Directory.Delete(templatePath, true);
-                WriteLine($"Template {name} has been uninstalled");
+                try
+                {
+                    Directory.Delete(templatePath, true);
+                    WriteLine($"Template {name} has been uninstalled");
+                }
+                catch (Exception e)
+                {
+                    Error($"Template {name} was not uninstalled. Reason: {e.Message}");
+                }                
             }
             else
             {
