@@ -68,6 +68,7 @@ namespace Bridge.CLI
             }
 
             Console.Write("Building ");
+
             using (var spinner = new ConsoleSpinner())
             {
                 spinner.Start();
@@ -130,6 +131,7 @@ namespace Bridge.CLI
             }
 
             Console.Write(Path.GetFileName(currentDir) + " done");
+
             return 0;
         }
 
@@ -137,6 +139,7 @@ namespace Bridge.CLI
         {
             var installedVersion = GetCompilerVersion().ProductVersion;
             var minVersion = "16.5.0";
+
             if (new Version(minVersion).CompareTo(new Version(installedVersion)) > 0)
             {
                 Error($"Minimum required version of Bridge compiler is {minVersion}. Your version: {installedVersion}");
@@ -173,29 +176,29 @@ Usage:
 
 
 Commands:
-  new                         Initialize a Bridge C# Class Library project.
-  build                       Builds the Bridge project.
-  run                         Compiles and immediately runs index.html file.
-  restore                     Restore dependencies specified in the project.
-  add package <name>          Add package to project
-  remove package <name>       Remove package from project
+  new                        Initialize a Bridge C# Class Library project.
+  build                      Builds the Bridge project.
+  run                        Compiles and immediately runs index.html file.
+  restore                    Restore dependencies specified in the project.
+  add package <name>         Add package to project
+  remove package <name>      Remove package from project
 
 
 Options:
-  -c, --configuration <name>  Configuration name (Debug/Release etc).
-  -D, --define <list>         Semicolon-delimited list of project constants.
-  -f, --folder <path>         Builder working directory relative to current dir.
-  -h, --help                  Display help.
-  -p, --project <path>        The .csproj file location.
-  -P, --platform <name>       Platform name (AnyCPU etc).
-  -r, --rebuild               Force assembly rebuilding.
-  -R, --recursive             Recursively search for .cs source files.
-  -s, --source <file>         Source files name/pattern [default: *.cs].
-  -S, --settings <name:value> Comma-delimited list of project settings.
-  -v, --version               Display version.
-  --nocore                    Do not extract core javascript files.
-  --norecursive               Non-recursive search for .cs source files.
-  --notimestamp               Do not show timestamp in log messages.
+  -c, --configuration <name> Configuration name (Debug/Release etc).
+  -D, --define <list>        Semicolon-delimited list of project constants.
+  -f, --folder <path>        Builder working directory relative to current dir.
+  -h, --help                 Display help.
+  -p, --project <path>       The .csproj file location.
+  -P, --platform <name>      Platform name (AnyCPU etc).
+  -r, --rebuild              Force assembly rebuilding.
+  -R, --recursive            Recursively search for .cs source files.
+  -s, --source <file>        Source files name/pattern [default: *.cs].
+  -S, --settings <name:val>  Comma-delimited list of project settings.
+  -v, --version              Display version.
+  --nocore                   Do not extract core javascript files.
+  --norecursive              Non-recursive search for .cs source files.
+  --notimestamp              Do not show timestamp in log messages.
 
 
   More information on getting started with
@@ -334,6 +337,7 @@ Options:
                     case "restore":
                         RestorePackages(currentDir);
                         skip = true;
+
                         return bridgeOptions;
                     case "build":
                         bridgeOptions.Rebuild = true;
@@ -361,35 +365,42 @@ Options:
                             switch(arg)
                             {
                                 case "-h":
-                                case "-help":
+                                case "--help":
                                     ShowNewCommandHelp();
+
                                     return bridgeOptions;
                                 case "-l":
-                                case "-list":
+                                case "--list":
                                     ShowTemplatesList();
+
                                     return bridgeOptions;
                                 case "-i":
-                                case "-install":
+                                case "--install":
                                     if (args.Length <= (i + 1))
                                     {
                                         Error("Please define path to new template");
+
                                         return bridgeOptions;
                                     }
 
                                     InstallTemplate(args[++i]);
+
                                     return bridgeOptions;
                                 case "-u":
-                                case "-uninstall":
+                                case "--uninstall":
                                     if (args.Length <= (i + 1))
                                     {
                                         Error("Please define template's name to uninstall");
+
                                         return bridgeOptions;
                                     }
 
                                     UninstallTemplate(args[++i]);
+
                                     return bridgeOptions;
                                 default:
                                     tpl = arg;
+
                                     break;
                             }                            
                         }
@@ -444,8 +455,8 @@ Options:
 
                         break;
 
-                    case "--rebuild":
                     case "-r":
+                    case "--rebuild":
                         bridgeOptions.Rebuild = true;
 
                         break;
@@ -651,6 +662,7 @@ Options:
                                     bridgeOptions.ReferencesPath = checkFolder;
                                     folder = checkFolder;
                                     found = true;
+
                                     break;
                                 }
                             }
@@ -683,24 +695,20 @@ Options:
 
 
 Options:
-  -h, --help          Displays help for this command.
-  -l, --list          Lists all templates.
-  -n, --name          The name for the output being created. If no name is specified, the name of the current directory is used.
-  -o, --output        Location to place the generated output.
-  -i, --install       Installs a template.
-  -u, --uninstall     Uninstalls a template.
+  -h, --help                 Displays help for this command.
+  -l, --list                 Lists all templates.
+  -i, --install              Installs a template.
+  -u, --uninstall            Uninstalls a template.
 
 
 Templates          Short Name          Description
 ----------------------------------------------------------------------------
 Class Library      classlib            New C# Class Library project.
-Class File         class               New .cs file.
 
 
 Examples:
     bridge new               New project using the default template.
     bridge new classlib      New project using classlib template.
-    bridge new -o Demo1      New project in new Demo1 folder.
     bridge new --help        Display help.");
         }
 
@@ -787,6 +795,7 @@ Examples:
                 if (settings.ContainsKey(name))
                 {
                     value = settings[name];
+
                     continue;
                 }
 

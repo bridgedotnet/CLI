@@ -42,6 +42,9 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>bridgedotnet-32x32.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -69,13 +72,25 @@
   <ItemGroup>
     <Folder Include=".build\templates\" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="bridgedotnet-32x32.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(OS)' != 'Unix'">
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <PostBuildEvent>XCOPY "$(ProjectDir).build\templates" "$(TargetDir)\templates\" /E /Y
+    <PostBuildEvent>:: Post-build event commands
+XCOPY "$(ProjectDir).build\templates" "$(TargetDir)\templates\" /E /Y
 XCOPY "$(SolutionDir)packages\Bridge.Min.16.5.0\tools" "$(TargetDir)\tools\" /E /Y
 XCOPY "$(SolutionDir)packages\Bridge.Core.16.5.0\lib\net40" "$(TargetDir)\lib\" /E /Y
-move /-y "$(TargetDir)\bridge.pdb" "$(TargetDir)\tools\"</PostBuildEvent>
+move /-y "$(TargetDir)\bridge.pdb" "$(TargetDir)\tools\"
+
+"$(SolutionDir)installer\windows\build-installer.bat" "$(Configuration)"</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(OS)' == 'Unix'">
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <PostBuildEvent># Post-build event commands
+"$(ProjectDir)unix-deploy.sh" "$(ProjectDir)" "$(TargetDir)" "$(SolutionDir)"
+    </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>

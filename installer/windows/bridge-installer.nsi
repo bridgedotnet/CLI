@@ -2,9 +2,10 @@
 ;Object.NET's Bridge.NET CLI Installer
   !define CompanyName "Object.NET"
   !define ProductName "Bridge.NET CLI"
+  !define ProductSite "https://bridge.net/"
+  !define ProductReadmeURL "https://github.com/bridgedotnet/CLI#bridge-cli"
   !define BridgeExec "bridge.exe"
   !define BridgeUninst "bridge-uninstall.exe"
-  !define Version "16.5.0"
   !define CompanyRegKey "Software\${CompanyName}"
   !define BaseRegKey "${CompanyRegKey}\${ProductName}"
   !define Build "Release"
@@ -12,10 +13,13 @@
   !define TemplatesPath "Templates"
   !define SrcPath "..\..\Bridge\bin\${Build}"
 
+  !getdllversion "${SrcPath}/${BridgeExec}" ver_fields_
+  !define Version "${ver_fields_1}.${ver_fields_2}.${ver_fields_3}"
+
   !define SysUninstallKey "Software\Microsoft\Windows\CurrentVersion\Uninstall\${ProductName}"
 
   ; Whether to install to the current user or for the whole machine
-  !define InstallScope "user" ; user or machine
+  !define InstallScope "machine" ; user or machine
 
   !if ${InstallScope} == "machine"
     !define RegistryRoot "HKLM"
@@ -40,17 +44,23 @@
 ;General
 
   ;Name and file
-  Name "Bridge.NET CLI"
-  OutFile "bridge-${Version}-install.exe"
+  Name "${ProductName}"
+  OutFile "bridge-cli.exe"
+
+  BrandingText "${ProductName} Setup"
 
   ;Default installation folder
-  InstallDir "$PROGRAMFILES\${CompanyName}\${ProductName}"
+  !if ${InstallScope} == "machine"
+    InstallDir "$PROGRAMFILES\${CompanyName}\${ProductName}"
+    ;Request application privileges for Windows Vista and newer
+    RequestExecutionLevel admin
+  !else
+    InstallDir "$APPDATA\${CompanyName}\${ProductName}"
+    RequestExecutionLevel user
+  !endif
 
   ;Get installation folder from registry if available
   InstallDirRegKey "${RegistryRoot}" "${BaseRegKey}" ""
-
-  ;Request application privileges for Windows Vista and newer
-  RequestExecutionLevel admin
 
   SetCompressor /solid lzma
 
@@ -58,11 +68,21 @@
 ;Interface Settings
 
   !define MUI_ABORTWARNING
+  !define MUI_ICON "..\..\Bridge\bridgedotnet-32x32.ico"
+  !define MUI_UNICON "..\..\Bridge\bridgedotnet-32x32.ico"
+  !define MUI_WELCOMEFINISHPAGE_BITMAP "images\welcome.bmp"
+  !define MUI_HEADERIMAGE
+  !define MUI_HEADERIMAGE_BITMAP "images\top.bmp"
 
 ;--------------------------------
 ;Pages
 
+  !define MUI_WELCOMEPAGE_TITLE_3LINES
+  !insertmacro MUI_PAGE_WELCOME
+
   !insertmacro MUI_PAGE_LICENSE "..\..\LICENSE"
+
+  !define MUI_COMPONENTSPAGE_SMALLDESC
   !insertmacro MUI_PAGE_COMPONENTS
 
   !define MUI_PAGE_CUSTOMFUNCTION_SHOW AskOrReuseDir
@@ -72,6 +92,12 @@
 
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
+
+  !define MUI_FINISHPAGE_LINK "View ${ProductName} Readme"
+  !define MUI_FINISHPAGE_LINK_LOCATION "${ProductReadmeURL}"
+  !define MUI_FINISHPAGE_TITLE_3LINES
+  !define MUI_WELCOMEFINISHPAGE_CUSTOMFUNCTION_INIT DisableBack
+  !insertmacro MUI_PAGE_FINISH
 
 ;--------------------------------
 ;Makes the target directory selection read-only if Bridge has already been
@@ -109,56 +135,11 @@ Section "${ProductName} v${Version}" InstallBridge
 
   SetOutPath "$INSTDIR\${AssembliesPath}\"
 
-  ; TODO: auto generate this list
-  File "${SrcPath}\${AssembliesPath}\AjaxMin.dll"
-  File "${SrcPath}\${AssembliesPath}\Bridge.Builder.v16.dll"
-  File "${SrcPath}\${AssembliesPath}\Bridge.Contract.dll"
-  File "${SrcPath}\${AssembliesPath}\bridge.exe"
-  File "${SrcPath}\${AssembliesPath}\bridge.pdb"
-  File "${SrcPath}\${AssembliesPath}\Bridge.Translator.dll"
-  File "${SrcPath}\${AssembliesPath}\ICSharpCode.NRefactory.Cecil.dll"
-  File "${SrcPath}\${AssembliesPath}\ICSharpCode.NRefactory.CSharp.dll"
-  File "${SrcPath}\${AssembliesPath}\ICSharpCode.NRefactory.dll"
-  File "${SrcPath}\${AssembliesPath}\Microsoft.CodeAnalysis.CSharp.dll"
-  File "${SrcPath}\${AssembliesPath}\Microsoft.CodeAnalysis.dll"
-  File "${SrcPath}\${AssembliesPath}\Mono.Cecil.dll"
-  File "${SrcPath}\${AssembliesPath}\Mono.Cecil.Mdb.dll"
-  File "${SrcPath}\${AssembliesPath}\Mono.Cecil.Pdb.dll"
-  File "${SrcPath}\${AssembliesPath}\Mono.Cecil.Rocks.dll"
-  File "${SrcPath}\${AssembliesPath}\Newtonsoft.Json.dll"
-  File "${SrcPath}\${AssembliesPath}\Object.Net.Utilities.dll"
-  File "${SrcPath}\${AssembliesPath}\System.AppContext.dll"
-  File "${SrcPath}\${AssembliesPath}\System.Collections.Immutable.dll"
-  File "${SrcPath}\${AssembliesPath}\System.Composition.AttributedModel.dll"
-  File "${SrcPath}\${AssembliesPath}\System.Composition.Convention.dll"
-  File "${SrcPath}\${AssembliesPath}\System.Composition.Hosting.dll"
-  File "${SrcPath}\${AssembliesPath}\System.Composition.Runtime.dll"
-  File "${SrcPath}\${AssembliesPath}\System.Composition.TypedParts.dll"
-  File "${SrcPath}\${AssembliesPath}\System.Console.dll"
-  File "${SrcPath}\${AssembliesPath}\System.Diagnostics.FileVersionInfo.dll"
-  File "${SrcPath}\${AssembliesPath}\System.Diagnostics.StackTrace.dll"
-  File "${SrcPath}\${AssembliesPath}\System.IO.Compression.dll"
-  File "${SrcPath}\${AssembliesPath}\System.IO.FileSystem.dll"
-  File "${SrcPath}\${AssembliesPath}\System.IO.FileSystem.Primitives.dll"
-  File "${SrcPath}\${AssembliesPath}\System.Reflection.Metadata.dll"
-  File "${SrcPath}\${AssembliesPath}\System.Security.Cryptography.Algorithms.dll"
-  File "${SrcPath}\${AssembliesPath}\System.Security.Cryptography.Encoding.dll"
-  File "${SrcPath}\${AssembliesPath}\System.Security.Cryptography.Primitives.dll"
-  File "${SrcPath}\${AssembliesPath}\System.Security.Cryptography.X509Certificates.dll"
-  File "${SrcPath}\${AssembliesPath}\System.Text.Encoding.CodePages.dll"
-  File "${SrcPath}\${AssembliesPath}\System.Threading.Thread.dll"
-  File "${SrcPath}\${AssembliesPath}\System.ValueTuple.dll"
-  File "${SrcPath}\${AssembliesPath}\System.Xml.ReaderWriter.dll"
-  File "${SrcPath}\${AssembliesPath}\System.Xml.XmlDocument.dll"
-  File "${SrcPath}\${AssembliesPath}\System.Xml.XPath.dll"
-  File "${SrcPath}\${AssembliesPath}\System.Xml.XPath.XDocument.dll"
-  File "${SrcPath}\${AssembliesPath}\TopologicalSorting.dll"
+  File "${SrcPath}\${AssembliesPath}\*"
 
-  SetOutPath "$INSTDIR\${TemplatesPath}\classlib"
+  SetOutPath "$INSTDIR\${TemplatesPath}\"
 
-  File "${SrcPath}\${TemplatesPath}\classlib\bridge.json"
-  File "${SrcPath}\${TemplatesPath}\classlib\packages.config"
-  File "${SrcPath}\${TemplatesPath}\classlib\Program.cs"
+  File /r "${SrcPath}\${TemplatesPath}\*"
 
   ;Store installation folder
   WriteRegStr "${RegistryRoot}" "${BaseRegKey}" "" $INSTDIR
@@ -166,12 +147,23 @@ Section "${ProductName} v${Version}" InstallBridge
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\${BridgeUninst}"
 
+  ;Windows Add/Remove programs entry
   WriteRegStr "${RegistryRoot}" "${SysUninstallKey}" \
-    "DisplayName" "${ProductName} v${Version}"
+    "DisplayIcon" "$INSTDIR\${BridgeExec}"
+  WriteRegStr "${RegistryRoot}" "${SysUninstallKey}" \
+    "DisplayName" "${ProductName}"
+  WriteRegStr "${RegistryRoot}" "${SysUninstallKey}" \
+    "DisplayVersion" "${Version}"
+  WriteRegStr "${RegistryRoot}" "${SysUninstallKey}" \
+    "InstallLocation" "$INSTDIR"
+  WriteRegStr "${RegistryRoot}" "${SysUninstallKey}" \
+    "Publisher" "${CompanyName}"
+  WriteRegStr "${RegistryRoot}" "${SysUninstallKey}" \
+    "QuietUninstallString" "$\"$INSTDIR\${BridgeUninst}$\" /S"
   WriteRegStr "${RegistryRoot}" "${SysUninstallKey}" \
     "UninstallString" "$\"$INSTDIR\${BridgeUninst}$\""
   WriteRegStr "${RegistryRoot}" "${SysUninstallKey}" \
-    "QuietUninstallString" "$\"$INSTDIR\${BridgeUninst}$\" /S"
+    "UrlInfoAbout" "${ProductSite}"
 
 SectionEnd
 
@@ -202,64 +194,13 @@ SectionEnd
 ;Uninstaller Section
 Section "Uninstall"
 
-  ; TODO: auto generate this list
-  Delete "$INSTDIR\${AssembliesPath}\AjaxMin.dll"
-  Delete "$INSTDIR\${AssembliesPath}\Bridge.Builder.v16.dll"
-  Delete "$INSTDIR\${AssembliesPath}\Bridge.Contract.dll"
-  Delete "$INSTDIR\${AssembliesPath}\bridge.exe"
-  Delete "$INSTDIR\${AssembliesPath}\bridge.pdb"
-  Delete "$INSTDIR\${AssembliesPath}\Bridge.Translator.dll"
-  Delete "$INSTDIR\${AssembliesPath}\ICSharpCode.NRefactory.Cecil.dll"
-  Delete "$INSTDIR\${AssembliesPath}\ICSharpCode.NRefactory.CSharp.dll"
-  Delete "$INSTDIR\${AssembliesPath}\ICSharpCode.NRefactory.dll"
-  Delete "$INSTDIR\${AssembliesPath}\Microsoft.CodeAnalysis.CSharp.dll"
-  Delete "$INSTDIR\${AssembliesPath}\Microsoft.CodeAnalysis.dll"
-  Delete "$INSTDIR\${AssembliesPath}\Mono.Cecil.dll"
-  Delete "$INSTDIR\${AssembliesPath}\Mono.Cecil.Mdb.dll"
-  Delete "$INSTDIR\${AssembliesPath}\Mono.Cecil.Pdb.dll"
-  Delete "$INSTDIR\${AssembliesPath}\Mono.Cecil.Rocks.dll"
-  Delete "$INSTDIR\${AssembliesPath}\Newtonsoft.Json.dll"
-  Delete "$INSTDIR\${AssembliesPath}\Object.Net.Utilities.dll"
-  Delete "$INSTDIR\${AssembliesPath}\System.AppContext.dll"
-  Delete "$INSTDIR\${AssembliesPath}\System.Collections.Immutable.dll"
-  Delete "$INSTDIR\${AssembliesPath}\System.Composition.AttributedModel.dll"
-  Delete "$INSTDIR\${AssembliesPath}\System.Composition.Convention.dll"
-  Delete "$INSTDIR\${AssembliesPath}\System.Composition.Hosting.dll"
-  Delete "$INSTDIR\${AssembliesPath}\System.Composition.Runtime.dll"
-  Delete "$INSTDIR\${AssembliesPath}\System.Composition.TypedParts.dll"
-  Delete "$INSTDIR\${AssembliesPath}\System.Console.dll"
-  Delete "$INSTDIR\${AssembliesPath}\System.Diagnostics.FileVersionInfo.dll"
-  Delete "$INSTDIR\${AssembliesPath}\System.Diagnostics.StackTrace.dll"
-  Delete "$INSTDIR\${AssembliesPath}\System.IO.Compression.dll"
-  Delete "$INSTDIR\${AssembliesPath}\System.IO.FileSystem.dll"
-  Delete "$INSTDIR\${AssembliesPath}\System.IO.FileSystem.Primitives.dll"
-  Delete "$INSTDIR\${AssembliesPath}\System.Reflection.Metadata.dll"
-  Delete "$INSTDIR\${AssembliesPath}\System.Security.Cryptography.Algorithms.dll"
-  Delete "$INSTDIR\${AssembliesPath}\System.Security.Cryptography.Encoding.dll"
-  Delete "$INSTDIR\${AssembliesPath}\System.Security.Cryptography.Primitives.dll"
-  Delete "$INSTDIR\${AssembliesPath}\System.Security.Cryptography.X509Certificates.dll"
-  Delete "$INSTDIR\${AssembliesPath}\System.Text.Encoding.CodePages.dll"
-  Delete "$INSTDIR\${AssembliesPath}\System.Threading.Thread.dll"
-  Delete "$INSTDIR\${AssembliesPath}\System.ValueTuple.dll"
-  Delete "$INSTDIR\${AssembliesPath}\System.Xml.ReaderWriter.dll"
-  Delete "$INSTDIR\${AssembliesPath}\System.Xml.XmlDocument.dll"
-  Delete "$INSTDIR\${AssembliesPath}\System.Xml.XPath.dll"
-  Delete "$INSTDIR\${AssembliesPath}\System.Xml.XPath.XDocument.dll"
-  Delete "$INSTDIR\${AssembliesPath}\TopologicalSorting.dll"
-
+  Delete "$INSTDIR\${AssembliesPath}\*"
   RMDir "$INSTDIR\${AssembliesPath}"
 
-  Delete "$INSTDIR\${TemplatesPath}\classlib\bridge.json"
-  Delete "$INSTDIR\${TemplatesPath}\classlib\packages.config"
-  Delete "$INSTDIR\${TemplatesPath}\classlib\Program.cs"
-
-  RMDir "$INSTDIR\${TemplatesPath}\classlib"
-  RMDir "$INSTDIR\${TemplatesPath}"
+  RMDir /r "$INSTDIR\${TemplatesPath}"
 
   Delete "$INSTDIR\${BridgeExec}"
-
   Delete "$INSTDIR\${BridgeUninst}"
-
   RMDir "$INSTDIR"
 
   ;Removes the Object.NET folder if it is left empty
@@ -282,6 +223,6 @@ done:
   DeleteRegKey /ifempty "${RegistryRoot}" "${CompanyRegKey}"
 
   ;The windows uninstall entry will be removed for good.
-  DeleteRegKey "${RegistryRoot}" "${SysUninstallKey}" \
+  DeleteRegKey "${RegistryRoot}" "${SysUninstallKey}"
 
 SectionEnd
