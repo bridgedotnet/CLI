@@ -67,6 +67,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include=".build\pre_clean.bat" />
+    <None Include=".build\post_build.bat" />
+    <None Include=".build\unix-deploy.sh" />
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
@@ -78,18 +81,16 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup Condition="'$(OS)' != 'Unix'">
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <PostBuildEvent>:: Post-build event commands
-XCOPY "$(ProjectDir).build\templates" "$(TargetDir)\templates\" /E /Y
-XCOPY "$(SolutionDir)packages\Bridge.Min.16.5.0\tools" "$(TargetDir)\tools\" /E /Y
-XCOPY "$(SolutionDir)packages\Bridge.Core.16.5.0\lib\net40" "$(TargetDir)\lib\" /E /Y
-move /-y "$(TargetDir)\bridge.pdb" "$(TargetDir)\tools\"
-
-"$(SolutionDir)installer\windows\build-installer.bat" "$(Configuration)"</PostBuildEvent>
+    <PostBuildEvent>"$(ProjectDir).build/post_build.bat" "$(ProjectDir)" "$(TargetDir)" "$(SolutionDir)" "$(Configuration)"</PostBuildEvent>
   </PropertyGroup>
+  <Target Name="BeforeClean" Condition="'$(OS)' != 'Unix'">
+    <Message Text="Running pre-cleaning tasks..." />
+    <Exec Command="&quot;$(ProjectDir).build/pre_clean.bat&quot; &quot;$(TargetDir)&quot;" />
+  </Target>
   <PropertyGroup Condition="'$(OS)' == 'Unix'">
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <PostBuildEvent># Post-build event commands
-"$(ProjectDir)unix-deploy.sh" "$(ProjectDir)" "$(TargetDir)" "$(SolutionDir)"
+"$(ProjectDir).build/unix-deploy.sh" "$(ProjectDir)" "$(TargetDir)" "$(SolutionDir)"
     </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
