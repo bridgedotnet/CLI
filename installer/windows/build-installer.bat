@@ -23,7 +23,7 @@ if "%Configuration%"=="Release" (
 
    rem assuming the script will be called from post-build directory, that is
    rem CLI\Bridge\bin\Release
-   "!nsisdir!\makensis.exe" "..\..\..\installer\windows\bridge-installer.nsi"
+   "!nsisdir!\makensis.exe" /DInstallScope=machine "..\..\..\installer\windows\bridge-installer.nsi"
    if !ERRORLEVEL! neq 0 (
     set exit_status=!ERRORLEVEL!
     echo *** Error: Unable to build Windows Installer package. makensis.exe returned exit status !exit_status!.
@@ -33,6 +33,18 @@ if "%Configuration%"=="Release" (
     if !ERRORLEVEL! neq 0 (
      set exit_status=!ERRORLEVEL!
      echo *** Error: Unable to move bridge installer package from '..\..\..\installer\windows' to '%CD%'.
+    )
+   )
+   "!nsisdir!\makensis.exe" /DInstallScope=user "..\..\..\installer\windows\bridge-installer.nsi"
+   if !ERRORLEVEL! neq 0 (
+    set exit_status=!ERRORLEVEL!
+    echo *** Error: Unable to build Windows Installer package. makensis.exe returned exit status !exit_status!.
+   ) else (
+    echo Moving Bridge CLI installer to %CD%
+    move ..\..\..\installer\windows\bridge-cli-local.exe .
+    if !ERRORLEVEL! neq 0 (
+     set exit_status=!ERRORLEVEL!
+     echo *** Error: Unable to move bridge local installer package from '..\..\..\installer\windows' to '%CD%'.
     )
    )
   ) else (

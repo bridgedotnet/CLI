@@ -21,7 +21,9 @@
   !define SysUninstallKey "Software\Microsoft\Windows\CurrentVersion\Uninstall\${ProductName}"
 
   ; Whether to install to the current user or for the whole machine
-  !define InstallScope "machine" ; user or machine
+  !ifndef InstallScope
+    !define InstallScope "machine"
+  !endif
 
   !if ${InstallScope} == "machine"
     !define RegistryRoot "HKLM"
@@ -45,18 +47,21 @@
 ;--------------------------------
 ;General
 
-  ;Name and file
-  Name "${ProductName}"
-  OutFile "bridge-cli.exe"
-
-  BrandingText "${ProductName} Setup"
-
-  ;Default installation folder
   !if ${InstallScope} == "machine"
+    ;Name and file
+    Name "${ProductName}"
+    OutFile "bridge-cli.exe"
+    BrandingText "${ProductName} Setup"
+    ;Default installation folder
     InstallDir "$PROGRAMFILES\${CompanyName}\${ProductName}"
     ;Request application privileges for Windows Vista and newer
     RequestExecutionLevel admin
   !else
+    ;Name and file
+    Name "${ProductName}"
+    OutFile "bridge-cli-local.exe"
+    BrandingText "${ProductName} Setup -- Install for current user account only"
+    ;Default installation folder
     InstallDir "$APPDATA\${CompanyName}\${ProductName}"
     RequestExecutionLevel user
   !endif
@@ -161,8 +166,15 @@ Section "${ProductName} v${Version}" InstallBridge
   ;Windows Add/Remove programs entry
   WriteRegStr "${RegistryRoot}" "${SysUninstallKey}" \
     "DisplayIcon" "$INSTDIR\${BridgeExec}"
-  WriteRegStr "${RegistryRoot}" "${SysUninstallKey}" \
-    "DisplayName" "${ProductName}"
+
+  !if ${InstallScope} == "machine"
+    WriteRegStr "${RegistryRoot}" "${SysUninstallKey}" \
+      "DisplayName" "${ProductName}"
+  !else
+    WriteRegStr "${RegistryRoot}" "${SysUninstallKey}" \
+      "DisplayName" "${ProductName} (installed for current user)"
+  !endif
+
   WriteRegStr "${RegistryRoot}" "${SysUninstallKey}" \
     "DisplayVersion" "${Version}"
   WriteRegStr "${RegistryRoot}" "${SysUninstallKey}" \
