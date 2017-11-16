@@ -21,6 +21,7 @@ namespace Bridge.CLI
             //args = new string[] { "new", "-i", @"C:\foto\Retyped.zip" };
             //var currentDir = @"C:\projects\Bridge\v1\Sandbox\FolderLib5\";
             var currentDir = Environment.CurrentDirectory;
+            var msg = "";
 
             CoreFolder = GetCoreFolder(currentDir);
             var resolver = new AssemblyResolver(CoreFolder);
@@ -67,7 +68,18 @@ namespace Bridge.CLI
                 bridgeOptions.BridgeLocation = GetBridgeLocation(currentDir);
             }
 
-            Console.Write("Building ");
+            msg = $"Building {Path.GetFileName(currentDir)}";
+
+            if (msg.Length >= 28)
+            {
+                msg += "  ";
+            }
+            else
+            {
+                msg = msg.PadRight(29);
+            }
+
+            Console.Write(msg);
 
             using (var spinner = new ConsoleSpinner())
             {
@@ -130,7 +142,7 @@ namespace Bridge.CLI
                 }
             }
 
-            Console.Write(Path.GetFileName(currentDir) + " done");
+            Console.Write("done");
 
             return 0;
         }

@@ -37,7 +37,7 @@ namespace Bridge.CLI
             if (active)
             {
                 active = false;
-                ForceDraw(' ');                
+                Clear();
             }            
         }
 
@@ -58,6 +58,12 @@ namespace Bridge.CLI
             {
                 ForceDraw(c);
             }            
+        }
+
+        private void Clear()
+        {
+            Console.SetCursorPosition(left, top);
+            Console.Write("");
         }
 
         private void ForceDraw(char c)

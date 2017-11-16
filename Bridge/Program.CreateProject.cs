@@ -25,12 +25,14 @@ namespace Bridge.CLI
                 catch (Exception e)
                 {
                     Error($"The error during template's archive extraction: {e.Message}");
+
                     return;
                 }
             }
             else
             {
                 var isFile = true;
+
                 try
                 {
                     var uri = new Uri(path);
@@ -43,6 +45,7 @@ namespace Bridge.CLI
                 if (isFile)
                 {
                     Error("Template file doesn't exist");
+
                     return;
                 }
 
@@ -62,11 +65,13 @@ namespace Bridge.CLI
                         ZipFile.ExtractToDirectory(localFile, templatesPath);
                         File.Delete(localFile);
                         WriteLine("done");
+
                         return;
                     }
                     catch (Exception e)
                     {
                         Error($"The download error: {e.Message}");
+
                         return;
                     }                    
                 }
@@ -197,14 +202,14 @@ namespace Bridge.CLI
             }
 
             var msg = $"Installing {packageName}";
-            
-            if (msg.Length >= 27)
+
+            if (msg.Length >= 28)
             {
                 msg += "  ";
             }
             else
             {
-                msg = msg.PadRight(28);
+                msg = msg.PadRight(29);
             }
 
             Console.Write(msg);
@@ -354,6 +359,7 @@ namespace Bridge.CLI
                 if (new Version(version).CompareTo(new Version(dirVersion)) > 0)
                 {
                     RemovePackage(folder, id);
+
                     return null;
                 }
                 else
