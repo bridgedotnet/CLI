@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
 namespace Bridge.CLI
@@ -182,6 +183,212 @@ namespace Bridge.CLI
             }
         }
 
+        private static void AddRepo(string path, string name)
+        {
+            var rootPath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
+            var repoConfig = Path.Combine(rootPath, Constants.RepoList);
+
+            if (!File.Exists(repoConfig))
+            {
+                var sr = File.CreateText(repoConfig);
+                using(sr)
+                {
+                    sr.Write(@"<?xml version=""1.0"" encoding=""utf-8""?>");
+                    sr.WriteLine();
+                    sr.Write("<repos>");
+                    sr.WriteLine();
+                    sr.Write("</repos>");
+                }
+            }
+
+            if (name == null)
+            {
+                name = "";
+            }
+
+            var doc = new System.Xml.XmlDocument();
+            doc.LoadXml(File.ReadAllText(repoConfig));
+
+            if (doc.DocumentElement.SelectSingleNode($"descendant::repo[@path='{path}' and @name='{name}']") != null)
+            {
+                return;
+            }
+
+            var node = doc.CreateNode(System.Xml.XmlNodeType.Element, "repo", null);
+            var attr = doc.CreateAttribute("path");
+            attr.Value = path;
+            node.Attributes.Append(attr);
+
+            attr = doc.CreateAttribute("name");
+            attr.Value = name;
+            node.Attributes.Append(attr);
+
+            doc.SelectSingleNode("repos").AppendChild(node);
+            doc.Save(repoConfig);
+        }
+
+        private static List<string> GetRepos()
+        {
+            var rootPath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
+            var repoConfig = Path.Combine(rootPath, Constants.RepoList);
+            var list = new List<string>();
+
+            if (File.Exists(repoConfig))
+            {
+                XDocument config = XDocument.Load(repoConfig);
+
+                list = config
+                    .Element("repos")
+                    .Elements("repo")
+                    .Select(repoElem => repoElem.Attribute("path").Value)
+                    .ToList();
+            }
+
+            list.Add("https://www.nuget.org/api/v2/package/");
+
+            return list;
+        }
+
+        private static PackageRequestResult RequestPackage(string repoPath, string packageName, string version, string localFile, string packagesFolder)
+        {
+            var result = new PackageRequestResult();
+            bool hasVersion = !string.IsNullOrWhiteSpace(version);
+
+            try
+            {
+                if (Directory.Exists(repoPath))
+                {
+                    string name = null;
+                    if (hasVersion)
+                    {
+                        name = packageName + "." + version;
+                    }
+                    else
+                    {
+                        var packages = Directory.GetFiles(repoPath, "*.nupkg", SearchOption.TopDirectoryOnly);
+                        var escapedName = packageName.Replace(".", @"\.");
+                        string pattern = $@"\A{escapedName}\.\d+(?:\.\d+)+\z";
+                        version = null;
+
+                        foreach (var p in packages)
+                        {
+                            var pName = Path.GetFileNameWithoutExtension(p);
+                            if (Regex.IsMatch(pName, pattern, RegexOptions.IgnoreCase))
+                            {
+                                var pVersion = pName.Substring(packageName.Length + 1);
+
+                                if (version == null)
+                                {
+                                    version = pVersion;
+                                }
+                                else if (new Version(version).CompareTo(new Version(pVersion)) < 0)
+                                {
+                                    version = pVersion;
+                                }
+                            }
+                        }
+
+                        if (version == null)
+                        {
+                            return result;
+                        }
+
+                        name = packageName + "." + version;
+                    }
+
+                    name = name[0].ToString().ToUpper() + name.Substring(1);
+                    var packageFolder = Path.Combine(packagesFolder, name);
+
+                    result.Folder = packageFolder;
+                    if (Directory.Exists(packageFolder))
+                    {
+                        result.Exists = true;
+                        result.Success = true;
+                    }
+                    else
+                    {
+                        var packageFile = Path.Combine(repoPath, name + ".nupkg");
+
+                        if(File.Exists(packageFile))
+                        {
+                            File.Copy(packageFile, localFile, true);
+                            result.Success = true;
+                        }
+                        else
+                        {
+                            result.Success = false;
+                        }                        
+                    }
+                }
+                else
+                {
+                    var isFile = true;
+
+                    try
+                    {
+                        var uri = new Uri(repoPath);
+                        isFile = uri.IsFile;
+                    }
+                    catch (Exception)
+                    {
+                    }
+
+                    if (!isFile)
+                    {                    
+                        if (!repoPath.EndsWith("/"))
+                        {
+                            repoPath += "/";
+                        }
+
+                        string uri = repoPath + packageName + (hasVersion ? "/" + version : "");
+                        string name = null;
+
+                        if (hasVersion)
+                        {
+                            name = packageName + "." + version;
+                        }
+                        else
+                        {
+                            var webRequest = (HttpWebRequest)WebRequest.Create(uri + "?" + new Random().Next());
+                            webRequest.AllowAutoRedirect = false;
+                            var webResponse = (HttpWebResponse)webRequest.GetResponse();
+
+                            if (!String.IsNullOrEmpty(webResponse.Headers["Location"]))
+                            {
+                                var fileName = System.IO.Path.GetFileName(webResponse.Headers["Location"]);
+                                name = Path.GetFileNameWithoutExtension(fileName);
+                            }
+
+                            webResponse.Dispose();
+                        }
+
+                        name = name[0].ToString().ToUpper() + name.Substring(1);
+                        var packageFolder = Path.Combine(packagesFolder, name);
+
+                        result.Folder = packageFolder;
+                        if (Directory.Exists(packageFolder))
+                        {
+                            result.Exists = true;
+                            result.Success = true;
+                        }
+                        else
+                        {
+                            WebClient client = new WebClient();
+                            client.DownloadFile(uri, localFile);
+                            client.Dispose();
+                            result.Success = true;    
+                        }                    
+                    }
+                }
+            }
+            catch
+            {
+                result.Success = false;
+            }
+
+            return result;
+        }
+
         private static void AddPackage(string folder, string packageName, string version = null, bool restore = false)
         {
             var packagesFolder = Path.Combine(folder, "packages");
@@ -192,7 +399,7 @@ namespace Bridge.CLI
             }
 
             bool hasVersion = !string.IsNullOrWhiteSpace(version);
-            string uri = "https://www.nuget.org/api/v2/package/" + packageName + (hasVersion ? "/" + version : "");
+            
             string name = packageName + (hasVersion ? "." + version : "");
             string localFile = Path.Combine(packagesFolder, name + ".nupkg");
 
@@ -225,46 +432,30 @@ namespace Bridge.CLI
             {
                 string packageFolder = null;
                 bool exists = false;
+                bool success = false;
+                var repos = GetRepos();
 
                 using (var spinner = new ConsoleSpinner())
                 {
                     spinner.Start();
-
-                    if (hasVersion)
+                    foreach (var repo in repos)
                     {
-                        name = packageName + "." + version;
-                    }
-                    else
-                    {
-                        var webRequest = (HttpWebRequest)WebRequest.Create(uri + "?" + new Random().Next());
-                        webRequest.AllowAutoRedirect = false;
-                        var webResponse = (HttpWebResponse)webRequest.GetResponse();
-
-                        if (!String.IsNullOrEmpty(webResponse.Headers["Location"]))
+                        var result = RequestPackage(repo, packageName, version, localFile, packagesFolder);
+                        if (result.Success)
                         {
-                            var fileName = System.IO.Path.GetFileName(webResponse.Headers["Location"]);
-                            name = Path.GetFileNameWithoutExtension(fileName);
+                            exists = result.Exists;
+                            packageFolder = result.Folder;
+                            success = true;
+                            break;
                         }
-
-                        webResponse.Dispose();
-                    }
-
-                    name = name[0].ToString().ToUpper() + name.Substring(1);
-                    packageFolder = Path.Combine(packagesFolder, name);
-
-                    if (Directory.Exists(packageFolder))
-                    {
-                        exists = true;
-                    }
-                    else
-                    {
-                        WebClient client = new WebClient();
-                        client.DownloadFile(uri, localFile);
-                        client.Dispose();
                     }
                 }
 
-                if (exists)
+                if (!success)
+                {
+                    Error("not found");
+                }
+                else if (exists)
                 {
                     Warn("skipped (already exists)");
                 }

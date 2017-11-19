@@ -18,7 +18,7 @@ namespace Bridge.CLI
 
         private static int Main(string[] args)
         {
-            //args = new string[] { "new", "-i", @"C:\foto\Retyped.zip" };
+            //args = new string[] { "add", "repo", @"""C:\projects\Bridge\v1\Bridge\.build\packages\""", "-n", "local" };
             //var currentDir = @"C:\projects\Bridge\v1\Sandbox\FolderLib5\";
             var currentDir = Environment.CurrentDirectory;
             var msg = "";
@@ -44,7 +44,18 @@ namespace Bridge.CLI
 
             bool skip = false;
             bool run = false;
-            var bridgeOptions = GetBridgeOptionsFromCommandLine(currentDir, args, ref skip, ref run);
+            dynamic bridgeOptions = null;
+
+            /*try
+            {
+                bridgeOptions = GetBridgeOptionsFromCommandLine(currentDir, args, ref skip, ref run);
+            }
+            catch(Exception)
+            {
+                Error("Invalid command line");
+                return 1;
+            }*/
+            bridgeOptions = GetBridgeOptionsFromCommandLine(currentDir, args, ref skip, ref run);
 
             if (bridgeOptions == null)
             {
@@ -301,6 +312,35 @@ Options:
 
                                 AddPackage(currentDir, package, version);
 
+                                break;
+
+                            case "repo":
+                                string repoPath = null;
+
+                                if (args.Length > (i + 1))
+                                {
+                                    repoPath = args[++i];
+                                }
+
+                                if (string.IsNullOrWhiteSpace(repoPath))
+                                {
+                                    throw new Exception("Please define repo path.");
+                                }
+
+                                if (!Path.IsPathRooted(repoPath))
+                                {
+                                    repoPath = Path.Combine(currentDir, repoPath);
+                                }
+
+                                string repoName = null;
+
+                                if (args.Length > (i + 2) && (args[i + 1] == "-n" || args[i + 1] == "--name"))
+                                {
+                                    repoName = args[i + 2];
+                                }
+                                
+                                AddRepo(repoPath, repoName);
+                                Console.WriteLine("done");
                                 break;
 
                             default:

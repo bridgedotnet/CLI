@@ -19,5 +19,7 @@
         /// Directory for CLI to look for template projects for new projects installation.
         /// </summary>
         public static readonly string TemplatesFolder = "templates";
+
+        public static readonly string RepoList = "repos.config";
     }
 }
