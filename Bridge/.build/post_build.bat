@@ -11,6 +11,7 @@ set Configuration=%~4
 XCOPY "%ProjectDir%.build\templates" "%TargetDir%templates\" /E /Y
 XCOPY "%SolutionDir%packages\Bridge.Min.16.5.0\tools" "%TargetDir%tools\" /E /Y
 XCOPY "%SolutionDir%packages\Bridge.Core.16.5.0\lib\net40" "%TargetDir%lib\" /E /Y
+XCOPY "%SolutionDir%packages\Bridge.Activator.1.0.0\lib\net452" "%TargetDir%tools\" /E /Y
 move /-y "%TargetDir%bridge.pdb" "%TargetDir%tools\"
 
 "%SolutionDir%installer\windows\build-installer.bat" "%Configuration%"

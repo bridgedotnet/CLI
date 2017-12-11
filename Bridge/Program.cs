@@ -42,6 +42,11 @@ namespace Bridge.CLI
                 return 1;
             }
 
+            if (HandleActivation(CoreFolder, args))
+            {
+                return 0;
+            }
+
             bool skip = false;
             bool run = false;
             dynamic bridgeOptions = null;
@@ -871,6 +876,75 @@ Examples:
             }
 
             return null;
+        }
+
+        private static bool HandleActivation(string coreDir, string[] args)
+        {
+            if (args == null || args.Length < 1)
+            {
+                return false;
+            }
+
+            var lazyActivator = new Lazy<dynamic>(() =>
+            {
+                var assembly = GetAssembly(Path.Combine(coreDir, "Bridge.Activator.dll"));
+                var type = assembly.GetTypes().First(t => t.Name == "LicenseActivator");
+                return System.Activator.CreateInstance(type);
+            });
+
+            var cmd = args[0];
+            var isActivate = cmd == "activate";
+            var isDeactivate = cmd == "deactivate";
+
+            if (isActivate)
+            {
+                if (args.Length != 2)
+                {
+                    Error("Invalid \"activate\" command. Expected format: \"bridge.exe activate <activation-code>\"");
+                    return true;
+                }
+
+                var code = args[1];
+
+                using (var activator = lazyActivator.Value)
+                {
+                    var msg = activator.Activate(code) as Tuple<string>;
+                    if (msg != null)
+                    {
+                        Error($"Activation error: '{msg.Item1}'");
+                        return true;
+                    }
+                }
+
+                Info("Success.");
+                return true;
+            }
+
+            if (isDeactivate)
+            {
+                if (args.Length > 2)
+                {
+                    Error("Invalid \"deactivate\" command. Expected format: \"bridge.exe deactivate [<activation-code>]\"");
+                    return true;
+                }
+
+                var code = args.Length == 2 ? args[1] : null;
+
+                using (var activator = lazyActivator.Value)
+                {
+                    var msg = activator.Deactivate(code) as Tuple<string>;
+                    if (msg != null)
+                    {
+                        Error($"Deactivation error: '{msg.Item1}'");
+                        return true;
+                    }
+                }
+
+                Info("Success.");
+                return true;
+            }
+
+            return false;
         }
     }
 }
