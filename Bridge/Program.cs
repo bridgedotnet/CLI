@@ -161,7 +161,7 @@ namespace Bridge.CLI
         private static bool EnsureMinimalCompilerVersion()
         {
             var installedVersion = GetCompilerVersion().ProductVersion;
-            var minVersion = "16.5.0";
+            var minVersion = "16.6.1";
 
             if (new Version(minVersion).CompareTo(new Version(installedVersion)) > 0)
             {

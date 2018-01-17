@@ -1,11 +1,11 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyVersion("16.5")]
-[assembly: AssemblyFileVersion("16.5.0")]
-[assembly: AssemblyInformationalVersion("16.5.0")]
+[assembly: AssemblyVersion("16.7")]
+[assembly: AssemblyFileVersion("16.6.1")]
+[assembly: AssemblyInformationalVersion("16.6.1")]
 [assembly: AssemblyCompany("Object.NET, Inc.")]
-[assembly: AssemblyCopyright("Copyright 2008-2017 Object.NET, Inc.")]
+[assembly: AssemblyCopyright("Copyright 2008-2018 Object.NET, Inc.")]
 [assembly: AssemblyTitle("Bridge CLI")]
 [assembly: AssemblyProduct("Bridge CLI")]
 [assembly: AssemblyDescription("Open Source C# to JavaScript Compiler")]
