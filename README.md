@@ -13,6 +13,8 @@ bridge [-h|--help]
 #### Example
 
 ```
+md Demo1                    // Create a new folder
+cd Demo1                    // Move into the folder
 bridge new                  // Create a new project
 bridge add package retyped  // Add retyped
 bridge build                // Build the project
@@ -29,6 +31,8 @@ build | Builds the Bridge project.
 run | Compiles and immediately runs the index.html file.
 add package &lt;name> | Add a package from NuGet.org to the project.
 remove package &lt;name> | Removes a Nuget package from the project.
+restore | Restores all NuGet packages.
+
 
 ## Common Options
 
