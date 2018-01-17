@@ -29,8 +29,8 @@ function copy_over() {
 }
 
 copy_over "${projdir}.build/templates" "${tgtdir}."
-copy_over "${slndir}packages/Bridge.Min.16.5.0/tools" "${tgtdir}."
-copy_over "${slndir}packages/Bridge.Core.16.5.0/lib/net40" "${tgtdir}lib"
+copy_over "${slndir}packages/Bridge.Min.16.6.1/tools" "${tgtdir}."
+copy_over "${slndir}packages/Bridge.Core.16.6.1/lib/net40" "${tgtdir}lib"
 copy_over "${tgtdir}bridge.pdb" "${tgtdir}tools/."
 
 if ${osx}; then
