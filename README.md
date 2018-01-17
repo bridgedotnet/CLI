@@ -17,8 +17,9 @@ md Demo1                    // Create a new folder
 cd Demo1                    // Move into the folder
 bridge new                  // Create a new project
 bridge add package retyped  // Add retyped
-bridge build                // Build the project
-bridge run                  // Run the project index.html
+code .                      // Open in Visual Studio Code
+bridge build                // Build the project, or
+bridge run                  // Build and Run the index.html
 ```
 
 ## Commands
