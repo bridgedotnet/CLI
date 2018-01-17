@@ -28,9 +28,12 @@ function copy_over() {
  cp -${cpargs} "${1}" "${2}" || trigger_error
 }
 
+bridgeminver="$(egrep "id=\"Bridge\.Min\"" "${projdir}../Bridge.Compiler/packages.config" | cut -f 4 -d\")"
+bridgecorever="$(egrep "id=\"Bridge\.Core\"" "${projdir}../Bridge.Compiler/packages.config" | cut -f 4 -d\")"
+
 copy_over "${projdir}.build/templates" "${tgtdir}."
-copy_over "${slndir}packages/Bridge.Min.16.7.0/tools" "${tgtdir}."
-copy_over "${slndir}packages/Bridge.Core.16.7.0/lib/net40" "${tgtdir}lib"
+copy_over "${slndir}packages/Bridge.Min.${bridgeminver}/tools" "${tgtdir}."
+copy_over "${slndir}packages/Bridge.Core.${bridgecorever}/lib/net40" "${tgtdir}lib"
 copy_over "${tgtdir}bridge.pdb" "${tgtdir}tools/."
 
 if ${osx}; then
