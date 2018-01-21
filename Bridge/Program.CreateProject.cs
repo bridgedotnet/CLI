@@ -590,13 +590,16 @@ namespace Bridge.CLI
                 var doc = new System.Xml.XmlDocument();
                 doc.LoadXml(File.ReadAllText(packagesConfig));
 
-                var nodes = doc.DocumentElement.SelectNodes($"descendant::package[@id='{id}']");
+                var nodes = doc.DocumentElement.SelectNodes("descendant::package");
 
                 if (nodes.Count > 0)
                 {
                     foreach (System.Xml.XmlNode node in nodes)
                     {
-                        node.ParentNode.RemoveChild(node);
+                        if (id.Equals(node.Attributes["id"].Value, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            node.ParentNode.RemoveChild(node);
+                        }                        
                     }
 
                     doc.Save(packagesConfig);
@@ -655,10 +658,15 @@ namespace Bridge.CLI
             var doc = new System.Xml.XmlDocument();
 
             doc.LoadXml(File.ReadAllText(configFileName));
+            var nodes = doc.DocumentElement.SelectSingleNode($"descendant::package");
 
-            if (doc.DocumentElement.SelectSingleNode($"descendant::package[@id='{id}' and @version='{version}']") != null)
+            foreach (System.Xml.XmlNode xnode in nodes)
             {
-                return;
+                if (id.Equals(xnode.Attributes["id"].Value, StringComparison.InvariantCultureIgnoreCase) &&
+                    version.Equals(xnode.Attributes["version"].Value, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return;
+                }
             }
 
             var node = doc.CreateNode(System.Xml.XmlNodeType.Element, "package", null);
