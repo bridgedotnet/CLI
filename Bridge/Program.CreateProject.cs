@@ -672,7 +672,7 @@ namespace Bridge.CLI
                         return;
                     }
                 }
-            }             
+            }
 
             var node = doc.CreateNode(System.Xml.XmlNodeType.Element, "package", null);
             var attr = doc.CreateAttribute("id");
