@@ -18,8 +18,6 @@ namespace Bridge.CLI
 
         private static int Main(string[] args)
         {
-            //args = new string[] { "add", "repo", @"""C:\projects\Bridge\v1\Bridge\.build\packages\""", "-n", "local" };
-            //var currentDir = @"C:\projects\Bridge\v1\Sandbox\FolderLib5\";
             var currentDir = Environment.CurrentDirectory;
             var msg = "";
 
