@@ -660,14 +660,19 @@ namespace Bridge.CLI
             doc.LoadXml(File.ReadAllText(configFileName));
             var nodes = doc.DocumentElement.SelectSingleNode($"descendant::package");
 
-            foreach (System.Xml.XmlNode xnode in nodes)
+            if (nodes != null)
             {
-                if (id.Equals(xnode.Attributes["id"].Value, StringComparison.InvariantCultureIgnoreCase) &&
-                    version.Equals(xnode.Attributes["version"].Value, StringComparison.InvariantCultureIgnoreCase))
+                foreach (System.Xml.XmlNode xnode in nodes)
                 {
-                    return;
+                    var node_id = xnode.Attributes["id"]?.Value;
+                    var node_version = xnode.Attributes["version"]?.Value;
+                    if (id.Equals(node_id, StringComparison.InvariantCultureIgnoreCase) &&
+                        version.Equals(node_version, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return;
+                    }
                 }
-            }
+            }             
 
             var node = doc.CreateNode(System.Xml.XmlNodeType.Element, "package", null);
             var attr = doc.CreateAttribute("id");
