@@ -14,7 +14,7 @@ set nsisdir=
 set exit_status=0
 set Configuration=%~1
 if "%Configuration%"=="Release" (
- for /f "tokens=2*" %%A in ('reg query "HKLM\SOFTWARE\NSIS" /v "" /reg:32 2^>nul ^| find "REG_SZ"') do (
+ for /f "tokens=2*" %%A in ('reg query "HKLM\SOFTWARE\NSIS" /v "" /reg:32 2^>nul ^| %WINDIR%\System32\find.exe "REG_SZ"') do (
   set nsisdir=%%B
  )
  if defined nsisdir (
