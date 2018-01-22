@@ -65,7 +65,7 @@ namespace Bridge.CLI
                         client.Dispose();
                         ZipFile.ExtractToDirectory(localFile, templatesPath);
                         File.Delete(localFile);
-                        WriteLine("done");
+                        WriteLine("done.");
 
                         return;
                     }
@@ -461,7 +461,7 @@ namespace Bridge.CLI
                 }
                 else
                 {
-                    Info("done");
+                    Info("done.");
 
                     if (!restore)
                     {

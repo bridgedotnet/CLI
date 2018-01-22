@@ -90,7 +90,7 @@ namespace Bridge.CLI
                 msg = msg.PadRight(29);
             }
 
-            Console.Write(msg);
+            Info(msg, false);
 
             using (var spinner = new ConsoleSpinner())
             {
@@ -153,7 +153,7 @@ namespace Bridge.CLI
                 }
             }
 
-            Console.Write("done");
+            Info("done.");
 
             return 0;
         }
@@ -340,7 +340,7 @@ Options:
                                 }
                                 
                                 AddRepo(repoPath, repoName);
-                                Console.WriteLine("done");
+                                Info("done.");
                                 break;
 
                             default:
