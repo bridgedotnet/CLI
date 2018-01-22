@@ -146,7 +146,7 @@ namespace Bridge.CLI
                         }
                     }
 
-                    
+
                     return 1;
                 }
             }
@@ -190,7 +190,7 @@ namespace Bridge.CLI
             string programName = Path.GetFileName(codeBase);
 
             Console.WriteLine(@"
-Usage: 
+Usage:
   bridge [commands] [options]
   bridge [options] (<name>|<path>|<list>)
   bridge [-h|--help]
@@ -336,7 +336,7 @@ Options:
                                 {
                                     repoName = args[i + 2];
                                 }
-                                
+
                                 AddRepo(repoPath, repoName);
                                 Info("done.");
                                 break;
@@ -452,7 +452,7 @@ Options:
                                     tpl = arg;
 
                                     break;
-                            }                            
+                            }
                         }
 
                         CreateProject(currentDir, tpl);
@@ -537,7 +537,7 @@ Options:
                                 return bridgeOptions; // success. Asked for help. Help provided
                             }
                         }
-                        
+
 
                         var error = args.Length > (i + 1) ? ParseProjectProperties(bridgeOptions, args[++i]) : "No settings are provided";
 
@@ -740,7 +740,7 @@ Options:
 
         private static void ShowNewCommandHelp()
         {
-            Console.WriteLine(@"Usage: 
+            Console.WriteLine(@"Usage:
   bridge new [options]
 
 
@@ -775,7 +775,7 @@ Examples:
     Platform
     RootNamespace
 
-  Example: 
+  Example:
     -S name1: value1,name2: value2
 
   Note:

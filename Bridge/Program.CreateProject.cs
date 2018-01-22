@@ -74,9 +74,9 @@ namespace Bridge.CLI
                         Error($"The download error: {e.Message}");
 
                         return;
-                    }                    
+                    }
                 }
-            }            
+            }
 
             WriteLine($"Template has been installed");
         }
@@ -97,7 +97,7 @@ namespace Bridge.CLI
                 catch (Exception e)
                 {
                     Error($"Template {name} was not uninstalled. Reason: {e.Message}");
-                }                
+                }
             }
             else
             {
@@ -317,7 +317,7 @@ namespace Bridge.CLI
                         else
                         {
                             result.Success = false;
-                        }                        
+                        }
                     }
                 }
                 else
@@ -334,7 +334,7 @@ namespace Bridge.CLI
                     }
 
                     if (!isFile)
-                    {                    
+                    {
                         if (!repoPath.EndsWith("/"))
                         {
                             repoPath += "/";
@@ -376,8 +376,8 @@ namespace Bridge.CLI
                             WebClient client = new WebClient();
                             client.DownloadFile(uri, localFile);
                             client.Dispose();
-                            result.Success = true;    
-                        }                    
+                            result.Success = true;
+                        }
                     }
                 }
             }
@@ -399,7 +399,7 @@ namespace Bridge.CLI
             }
 
             bool hasVersion = !string.IsNullOrWhiteSpace(version);
-            
+
             string name = packageName + (hasVersion ? "." + version : "");
             string localFile = Path.Combine(packagesFolder, name + ".nupkg");
 
@@ -599,7 +599,7 @@ namespace Bridge.CLI
                         if (id.Equals(node.Attributes["id"].Value, StringComparison.InvariantCultureIgnoreCase))
                         {
                             node.ParentNode.RemoveChild(node);
-                        }                        
+                        }
                     }
 
                     doc.Save(packagesConfig);
@@ -744,7 +744,7 @@ namespace Bridge.CLI
                             {
                                 restore = true;
                             }
-                        }                        
+                        }
 
                         if (restore)
                         {

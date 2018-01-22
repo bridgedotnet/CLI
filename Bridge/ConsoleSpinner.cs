@@ -38,7 +38,7 @@ namespace Bridge.CLI
             {
                 active = false;
                 Clear();
-            }            
+            }
         }
 
         private void Spin()
@@ -57,7 +57,7 @@ namespace Bridge.CLI
             if (active)
             {
                 ForceDraw(c);
-            }            
+            }
         }
 
         private void Clear()

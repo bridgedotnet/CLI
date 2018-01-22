@@ -20,7 +20,7 @@ The following steps outline the commands for creating a new C# project using the
 6. Build (compile) the project
 7. Run the app in your default web browser
 
-[Bridge CLI](https://bridge.net/download) and [Visual Studio Code](https://code.visualstudio.com/) must have already been installed for this sample to work. We use **Visual Studio Code** in this sample, but you can substitue for your editor of choice. 
+[Bridge CLI](https://bridge.net/download) and [Visual Studio Code](https://code.visualstudio.com/) must have already been installed for this sample to work. We use **Visual Studio Code** in this sample, but you can substitue for your editor of choice.
 
 #### Example (Windows Command Prompt)
 
@@ -46,7 +46,7 @@ bridge build                // Build the project, or
 bridge run                  // Build and Run the index.html
 ```
 
-After successfully building your project, you should see a new **dist** folder in your project root. These are the Bridge generated files, including your **index.html** file which can be opened in a browser, or just use the `bridge run` command from the Command or Terminal. 
+After successfully building your project, you should see a new **dist** folder in your project root. These are the Bridge generated files, including your **index.html** file which can be opened in a browser, or just use the `bridge run` command from the Command or Terminal.
 
 **PRO TIP:** If you're using **Visual Studio Code**, after opening the project, you can use <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd> to build your project without leaving VS Code.
 
