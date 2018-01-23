@@ -1,4 +1,6 @@
-﻿namespace Bridge.CLI
+﻿using System.Reflection;
+
+namespace Bridge.CLI
 {
     /// <summary>
     /// Constant values valid throughout the application.
@@ -21,5 +23,10 @@
         public static readonly string TemplatesFolder = "templates";
 
         public static readonly string RepoList = "repos.config";
+
+        /// <summary>
+        /// Gets just major+minor (.0) version of Bridge reflected in Bridge CLI.
+        /// </summary>
+        public static readonly string MinBridgeVersion = Assembly.GetEntryAssembly().GetName().Version.Major + "." + Assembly.GetEntryAssembly().GetName().Version.Minor + ".0";
     }
 }
