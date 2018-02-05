@@ -9,12 +9,12 @@
 # Infer version from AssemblyInfo.
 bridgever="$(egrep "^\[assembly: *AssemblyInformationalVersion\(" \
  "Bridge/Properties/AssemblyInfo.cs" | cut -f2 -d\")"
-
+ 
 # Variables
 install_title="Bridge CLI v${bridgever} Installer"
 mountpoint="/Volumes/Bridge_CLI_Installer"
 tempdmg="bridgecli_installer.dmg"
-targetdmg="bridge-cli-v${version}.dmg"
+targetdmg="bridge-cli.${bridgever}.dmg"
 
 # "installer" window settings
 win_top=50
@@ -81,6 +81,10 @@ fi
 
 if [ -e "${targetdmg}" ]; then
  trigger_error "Target package file already exists: ${targetdmg}"
+fi
+
+if [ -z "${bridgever}" ]; then
+ trigger_error "Unable to query current Bridge version."
 fi
 
 echo "Bridge release path: ${clipath}"
