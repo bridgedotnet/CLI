@@ -22,7 +22,8 @@ if [ -z "${ver}" ]; then
 fi
 
 mkdir bridge-cli-${ver}
-cp -pr Bridge/bin/Release/{bridge.exe,templates,tools} bridge-cli-${ver}/.
+cp -pr LICENSE Bridge/bin/Release/{bridge.exe,templates,tools} \
+ bridge-cli-${ver}/.
 cp installer/windows/zipfile-readme.txt bridge-cli-${ver}/readme.txt
 zip -r bridge-cli-${ver}.zip bridge-cli-${ver}
 
