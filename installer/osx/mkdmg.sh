@@ -6,11 +6,15 @@
 # /Library/Frameworks/Bridge and also install bridge to the path with the
 # /etc/path.d/bridge-commands file.
 
+# Infer version from AssemblyInfo.
+bridgever="$(egrep "^\[assembly: *AssemblyInformationalVersion\(" \
+ "Bridge/Properties/AssemblyInfo.cs" | cut -f2 -d\")"
+
 # Variables
-install_title="Bridge CLI Installer"
+install_title="Bridge CLI v${bridgever} Installer"
 mountpoint="/Volumes/Bridge_CLI_Installer"
 tempdmg="bridgecli_installer.dmg"
-targetdmg="bridge-cli.dmg"
+targetdmg="bridge-cli-v${version}.dmg"
 
 # "installer" window settings
 win_top=50
