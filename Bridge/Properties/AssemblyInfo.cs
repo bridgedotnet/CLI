@@ -2,8 +2,8 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyVersion("16.8.0.0")]
-[assembly: AssemblyFileVersion("16.8.1")]
-[assembly: AssemblyInformationalVersion("16.8.1")]
+[assembly: AssemblyFileVersion("16.8.2")]
+[assembly: AssemblyInformationalVersion("16.8.2")]
 [assembly: AssemblyCompany("Object.NET, Inc.")]
 [assembly: AssemblyCopyright("Copyright 2008-2018 Object.NET, Inc.")]
 [assembly: AssemblyTitle("Bridge CLI")]
