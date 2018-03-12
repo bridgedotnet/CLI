@@ -60,6 +60,7 @@ build | Builds the Bridge project.
 run | Compiles and immediately runs the index.html file.
 add package &lt;name> | Add a package from NuGet.org to the project.
 remove package &lt;name> | Removes a Nuget package from the project.
+add repo "&lt;path>" | Add a package source location.
 restore | Restores all NuGet packages.
 
 ## Common Options
