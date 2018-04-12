@@ -158,12 +158,10 @@ namespace Bridge.CLI
 
         private static bool EnsureMinimalCompilerVersion()
         {
-            var installedVersion = GetCompilerVersion().ProductVersion;
-            var minVersion = Constants.MinBridgeVersion;
-
-            if (new Version(minVersion).CompareTo(new Version(installedVersion)) > 0)
+            // Always compare AssemblyVersion; always show InformationalVersion.
+            if (new Version(Constants.MinBridgeVersion).CompareTo(GetCompilerVersion()) > 0)
             {
-                Error($"Minimum required version of Bridge compiler is {minVersion}. Your version: {installedVersion}");
+                Error($"Minimum required version of Bridge compiler is {Constants.MinBridgeVersion}. Your version: {GetCompilerInformationalVersion()}.");
 
                 return false;
             }
@@ -171,14 +169,19 @@ namespace Bridge.CLI
             return true;
         }
 
-        private static System.Diagnostics.FileVersionInfo GetCompilerVersion()
+        private static Version GetCompilerVersion()
         {
-            return System.Diagnostics.FileVersionInfo.GetVersionInfo(TranslatorAssembly.Location);
+            return TranslatorAssembly.GetName().Version;
+        }
+
+        private static string GetCompilerInformationalVersion()
+        {
+            return System.Diagnostics.FileVersionInfo.GetVersionInfo(TranslatorAssembly.Location).ProductVersion;
         }
 
         private static void ShowVersion()
         {
-            Console.WriteLine(GetCompilerVersion().ProductVersion);
+            Console.WriteLine(GetCompilerInformationalVersion());
         }
 
         /// <summary>
@@ -796,7 +799,7 @@ Examples:
         {
             if (!IsPropertyExist(obj, name))
             {
-                throw new InvalidOperationException($"'{name}' property doesn't exist in '{obj.GetType().FullName}'. Core version: {GetCompilerVersion().ToString()}");
+                throw new InvalidOperationException($"'{name}' property doesn't exist in '{obj.GetType().FullName}'. Core version: {GetCompilerInformationalVersion()}");
             }
         }
 
