@@ -424,15 +424,14 @@ namespace Bridge.CLI
                 File.Delete(localFile);
             }
 
-            var msg = $"Installing {packageName}";
+            var msg = $"Installing {packageName} ";
 
-            if (msg.Length >= 28)
+            if (!ConsoleSpinner.DumbTerm)
             {
-                msg += "  ";
-            }
-            else
-            {
-                msg = msg.PadRight(29);
+                if (msg.Length <= 29)
+                {
+                    msg = msg.PadRight(29);
+                }
             }
 
             Console.Write(msg);
