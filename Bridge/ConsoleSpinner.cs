@@ -12,17 +12,57 @@ namespace Bridge.CLI
         private readonly int delay;
         private bool active;
         private readonly Thread thread;
+        private static bool? dumbTerm = null;
 
-        public ConsoleSpinner(int delay = 100) : this(Console.CursorLeft, Console.CursorTop, delay)
+        /// <summary>
+        /// This will ensure the console can handle "fancy" operations with
+        /// the cursor. Dumb terminals or cygwin shell won't handle it.
+        /// </summary>
+        public static bool DumbTerm
+        {
+            get
+            {
+                if (dumbTerm == null)
+                {
+                    try
+                    {
+                        Console.SetCursorPosition(Console.CursorLeft, Console.CursorTop);
+                        dumbTerm = false;
+                    }
+                    catch (System.IO.IOException)
+                    {
+                        dumbTerm = true;
+                    }
+                    catch
+                    {
+                        throw;
+                    }
+                }
+
+                return dumbTerm.Value;
+            }
+        }
+
+        public ConsoleSpinner(int delay = 100) : this(-1, -1, delay)
         {
         }
 
         public ConsoleSpinner(int left, int top, int delay = 100)
         {
-            this.left = left;
-            this.top = top;
             this.delay = delay;
-            thread = new Thread(Spin);
+
+            if (DumbTerm)
+            {
+                this.left = -1;
+                this.top = -1;
+                thread = new Thread(DropDots);
+            }
+            else
+            {
+                this.left = left < 0 ? Console.CursorLeft : left;
+                this.top = top < 0 ? Console.CursorTop : top;
+                thread = new Thread(Spin);
+            }
         }
 
         public void Start()
@@ -52,6 +92,15 @@ namespace Bridge.CLI
             Draw(' ');
         }
 
+        private void DropDots()
+        {
+            while (active)
+            {
+                Console.Write('.');
+                Thread.Sleep(delay);
+            }
+        }
+
         private void Draw(char c)
         {
             if (active)
@@ -62,8 +111,16 @@ namespace Bridge.CLI
 
         private void Clear()
         {
-            Console.SetCursorPosition(left, top);
-            Console.Write("");
+            if (!DumbTerm)
+            {
+                Console.SetCursorPosition(left, top);
+                Console.Write("");
+            }
+            else
+            {
+                // On dumb terminals, "clear" will mean printing a whitespace after the last printed dot.
+                Console.Write(" ");
+            }
         }
 
         private void ForceDraw(char c)

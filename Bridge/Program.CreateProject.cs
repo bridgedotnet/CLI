@@ -420,7 +420,6 @@ namespace Bridge.CLI
             }
 
             Console.Write(msg);
-
             if (Directory.Exists(Path.Combine(packagesFolder, name)))
             {
                 Warn("skipped (already exists)");
@@ -434,7 +433,6 @@ namespace Bridge.CLI
                 bool exists = false;
                 bool success = false;
                 var repos = GetRepos();
-
                 using (var spinner = new ConsoleSpinner())
                 {
                     spinner.Start();
