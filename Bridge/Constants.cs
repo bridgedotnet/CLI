@@ -24,9 +24,24 @@ namespace Bridge.CLI
 
         public static readonly string RepoList = "repos.config";
 
+        private static InformationalVersion minBridgeVersion = null;
+
         /// <summary>
         /// Gets just major+minor (.0) version of Bridge reflected in Bridge CLI.
+        /// If built against a prerelease version of Bridge, full version is required.
         /// </summary>
-        public static readonly string MinBridgeVersion = Assembly.GetEntryAssembly().GetName().Version.Major + "." + Assembly.GetEntryAssembly().GetName().Version.Minor + ".0";
+        public static InformationalVersion MinBridgeVersion
+        {
+            get
+            {
+                if (minBridgeVersion == null)
+                {
+                    var ver = new InformationalVersion(System.Diagnostics.FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location).ProductVersion);
+                    minBridgeVersion = ver.IsPrerelease ? ver : new InformationalVersion(ver.Major, ver.Minor);
+                }
+
+                return minBridgeVersion;
+            }
+        }
     }
 }

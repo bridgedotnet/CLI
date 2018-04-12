@@ -14,6 +14,8 @@ namespace Bridge.CLI
 
         public static Assembly ContractAssembly { get; private set; }
 
+        public static bool EnablePrerelease { get; private set; }
+
         public static string CoreFolder { get; private set; }
 
         private static int Main(string[] args)
@@ -27,6 +29,7 @@ namespace Bridge.CLI
 
             TranslatorAssembly = GetTranslatorAssembly(CoreFolder);
             ContractAssembly = GetContractAssembly(CoreFolder);
+            EnablePrerelease = false;
 
             if (!EnsureMinimalCompilerVersion())
             {
@@ -158,10 +161,12 @@ namespace Bridge.CLI
 
         private static bool EnsureMinimalCompilerVersion()
         {
-            // Always compare AssemblyVersion; always show InformationalVersion.
-            if (new Version(Constants.MinBridgeVersion).CompareTo(GetCompilerVersion()) > 0)
+            // Check against compiler's informational version as well, so we don't allow a
+            // prerelease package to be used against the corresponding stable release build
+            // of Bridge CLI.
+            if (Constants.MinBridgeVersion < BridgeVersion.GetCompilerInformationalVersion())
             {
-                Error($"Minimum required version of Bridge compiler is {Constants.MinBridgeVersion}. Your version: {GetCompilerInformationalVersion()}.");
+                Error($"Minimum required version of Bridge compiler is {Constants.MinBridgeVersion}. Your version: {BridgeVersion.GetCompilerInformationalVersion()}.");
 
                 return false;
             }
@@ -169,19 +174,9 @@ namespace Bridge.CLI
             return true;
         }
 
-        private static Version GetCompilerVersion()
-        {
-            return TranslatorAssembly.GetName().Version;
-        }
-
-        private static string GetCompilerInformationalVersion()
-        {
-            return System.Diagnostics.FileVersionInfo.GetVersionInfo(TranslatorAssembly.Location).ProductVersion;
-        }
-
         private static void ShowVersion()
         {
-            Console.WriteLine(GetCompilerInformationalVersion());
+            Console.WriteLine(BridgeVersion.GetCompilerInformationalVersion());
         }
 
         /// <summary>
@@ -220,6 +215,7 @@ Options:
   -s, --source <file>        Source files name/pattern [default: *.cs].
   -S, --settings <name:val>  Comma-delimited list of project settings.
   -v, --version              Display version.
+  --enable-prerelease        Enables NuGet packages' prerelease versions.
   --nocore                   Do not extract core javascript files.
   --norecursive              Non-recursive search for .cs source files.
   --notimestamp              Do not show timestamp in log messages.
@@ -275,9 +271,29 @@ Options:
             string defineConstants = null;
             var hasPriorityDefineConstants = false;
 
-            int i = 0;
+            int i;
 
-            while (i < args.Length)
+            var positionDependentArgs = new List<string>();
+
+            // Read position-independent arguments
+            for (i = 0; i < args.Length; i++)
+            {
+                switch (args[i])
+                {
+                    case "--enable-prerelease":
+                        Program.EnablePrerelease = true;
+                        break;
+                    default:
+                        positionDependentArgs.Add(args[i]);
+                        break;
+                }
+            }
+
+            // Rewrite the argument list suppressing the position independent ones
+            // already consumed in the previous loop.
+            args = positionDependentArgs.ToArray();
+
+            for (i = 0; i < args.Length; i++)
             {
                 switch (args[i])
                 {
@@ -632,8 +648,6 @@ Options:
 
                         break;
                 }
-
-                i++;
             }
 
             if (hasPriorityConfiguration)
@@ -799,7 +813,7 @@ Examples:
         {
             if (!IsPropertyExist(obj, name))
             {
-                throw new InvalidOperationException($"'{name}' property doesn't exist in '{obj.GetType().FullName}'. Core version: {GetCompilerInformationalVersion()}");
+                throw new InvalidOperationException($"'{name}' property doesn't exist in '{obj.GetType().FullName}'. Core version: {BridgeVersion.GetCompilerInformationalVersion()}");
             }
         }
 

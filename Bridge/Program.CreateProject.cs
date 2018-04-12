@@ -12,6 +12,8 @@ namespace Bridge.CLI
 {
     public partial class Program
     {
+        private static string nl = Environment.NewLine;
+
         private static void InstallTemplate(string path)
         {
             var rootPath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
@@ -267,33 +269,44 @@ namespace Bridge.CLI
                     {
                         var packages = Directory.GetFiles(repoPath, "*.nupkg", SearchOption.TopDirectoryOnly);
                         var escapedName = packageName.Replace(".", @"\.");
-                        string pattern = $@"\A{escapedName}\.\d+(?:\.\d+)+\z";
+
+                        string pattern = "\\A" + escapedName + "\\.\\d+(\\.\\d+){2}\\z";
+
+                        // Prerelease-aware pattern
+                        if (Program.EnablePrerelease)
+                        {
+                            pattern = "\\A" + escapedName + "\\.\\d+(\\.\\d+){2}(|-.*)\\z";
+                        }
+
                         version = null;
+                        InformationalVersion latestVersion = null;
 
                         foreach (var p in packages)
                         {
                             var pName = Path.GetFileNameWithoutExtension(p);
                             if (Regex.IsMatch(pName, pattern, RegexOptions.IgnoreCase))
                             {
-                                var pVersion = pName.Substring(packageName.Length + 1);
+                                var pVersion = new InformationalVersion(pName.Substring(packageName.Length + 1));
 
-                                if (version == null)
+                                if (latestVersion == null)
                                 {
-                                    version = pVersion;
+                                    latestVersion = pVersion;
                                 }
-                                else if (new Version(version).CompareTo(new Version(pVersion)) < 0)
+                                else if (pVersion > latestVersion)
                                 {
-                                    version = pVersion;
+                                    latestVersion = pVersion;
                                 }
                             }
                         }
 
-                        if (version == null)
+                        if (latestVersion == null)
                         {
                             return result;
                         }
 
-                        name = packageName + "." + version;
+                        BridgeVersion.ValidatePackageVersion(packageName, repoPath, latestVersion);
+
+                        name = packageName + "." + latestVersion;
                     }
 
                     name = name[0].ToString().ToUpper() + name.Substring(1);
@@ -359,6 +372,8 @@ namespace Bridge.CLI
                                 name = Path.GetFileNameWithoutExtension(fileName);
                             }
 
+                            BridgeVersion.ValidatePackageVersion(packageName, repoPath, name.Substring(packageName.Length + 1));
+
                             webResponse.Dispose();
                         }
 
@@ -381,9 +396,10 @@ namespace Bridge.CLI
                     }
                 }
             }
-            catch
+            catch (Exception e)
             {
                 result.Success = false;
+                result.Exception = new Exception("Package request failed.", e);
             }
 
             return result;
@@ -433,12 +449,13 @@ namespace Bridge.CLI
                 bool exists = false;
                 bool success = false;
                 var repos = GetRepos();
+                PackageRequestResult result = null;
                 using (var spinner = new ConsoleSpinner())
                 {
                     spinner.Start();
                     foreach (var repo in repos)
                     {
-                        var result = RequestPackage(repo, packageName, version, localFile, packagesFolder);
+                        result = RequestPackage(repo, packageName, version, localFile, packagesFolder);
                         if (result.Success)
                         {
                             exists = result.Exists;
@@ -451,7 +468,16 @@ namespace Bridge.CLI
 
                 if (!success)
                 {
-                    Error("not found");
+                    if (result != null && result.Exception != null)
+                    {
+                        Error("failed.");
+                        throw result.Exception;
+                    }
+                    else
+                    {
+                        Error("not found.");
+                    }
+
                 }
                 else if (exists)
                 {
@@ -488,10 +514,18 @@ namespace Bridge.CLI
             }
             catch (Exception e)
             {
-                Error("Error: ");
-                Error(e.Message);
+                var exceptionChain = "";
+                var currException = e;
 
-                Console.WriteLine();
+                while (currException != null)
+                {
+                    exceptionChain += "- " + currException.Message + nl;
+                    currException = currException.InnerException;
+                }
+                Error("Error: " + nl + exceptionChain);
+#if DEBUG
+                throw e;
+#endif
             }
         }
 
@@ -540,7 +574,6 @@ namespace Bridge.CLI
             if (dirs.Length > 0)
             {
                 dirs = SortNewestPackage(id, dirs);
-
                 var dir = dirs.First();
                 var dirName = Path.GetFileName(dir);
                 var dirVersion = dirName.Substring(id.Length + 1);
@@ -697,7 +730,8 @@ namespace Bridge.CLI
             var versions = dirs.Select(d =>
             {
                 var name = Path.GetFileName(d);
-                return new Tuple<string, Version>(d, new Version(name.Substring(id.Length + 1)));
+                var verString = name.Substring(id.Length + 1);
+                return new Tuple<string, InformationalVersion>(d, new InformationalVersion(verString));
             }).ToList();
 
             versions.Sort((a, b) => a.Item2.CompareTo(b.Item2));

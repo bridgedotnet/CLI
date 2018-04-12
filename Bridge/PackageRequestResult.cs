@@ -25,5 +25,11 @@ namespace Bridge.CLI
             get;
             set;
         }
+
+        public Exception Exception
+        {
+            get;
+            set;
+        }
     }
 }
