@@ -164,7 +164,7 @@ namespace Bridge.CLI
             // Check against compiler's informational version as well, so we don't allow a
             // prerelease package to be used against the corresponding stable release build
             // of Bridge CLI.
-            if (Constants.MinBridgeVersion < BridgeVersion.GetCompilerInformationalVersion())
+            if (Constants.MinBridgeVersion > BridgeVersion.GetCompilerInformationalVersion())
             {
                 Error($"Minimum required version of Bridge compiler is {Constants.MinBridgeVersion}. Your version: {BridgeVersion.GetCompilerInformationalVersion()}.");
 
