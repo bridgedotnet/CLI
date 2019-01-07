@@ -10,15 +10,14 @@ bridge [options] (<name>|<path>|<list>)
 bridge [-h|--help]
 ```
 
-The following steps outline the commands for creating a new C# project using the Bridge CLI, then opening in **Visual Studio Code**, then ultimately running your app in a web browser. Here's what we'll do:
+The following steps outline the commands for creating a new C# project using the Bridge CLI, then opening the project in **Visual Studio Code**, and then running your app in a web browser. Here's what we'll do:
 
 1. Create a new folder called **Demo1** (rename to whatever you want)
 2. Move the command prompt into the folder
 3. Create a new Bridge project using the default project template
-4. Add Retyped to the project
-5. Open the project in **Visual Studio Code**
-6. Build (compile) the project
-7. Run the app in your default web browser
+4. Open the project in **Visual Studio Code**
+5. Build (compile) the project
+6. Run the app in your default web browser
 
 [Bridge CLI](https://bridge.net/download) and [Visual Studio Code](https://code.visualstudio.com/) must have already been installed for this sample to work. We use **Visual Studio Code** in this sample, but you can substitue for your editor of choice.
 
@@ -28,7 +27,6 @@ The following steps outline the commands for creating a new C# project using the
 md Demo1                    // Create a new folder
 cd Demo1                    // Move into the folder
 bridge new                  // Create a new project
-bridge add package retyped  // Add retyped
 code .                      // Open in Visual Studio Code
 bridge build                // Build the project, or
 bridge run                  // Build and Run the index.html
@@ -40,13 +38,12 @@ bridge run                  // Build and Run the index.html
 mkdir Demo1                 // Create a new folder
 cd Demo1                    // Move into the folder
 bridge new                  // Create a new project
-bridge add package retyped  // Add retyped
 code .                      // Open in Visual Studio Code
 bridge build                // Build the project, or
 bridge run                  // Build and Run the index.html
 ```
 
-After successfully building your project, you should see a new **dist** folder in your project root. These are the Bridge generated files, including your **index.html** file which can be opened in a browser, or just use the `bridge run` command from the Command or Terminal.
+After successfully building your project, you should see a new **/dist** folder in your project root. These are the Bridge generated files, including your **index.html** file which can be opened in a browser, or just use the `bridge run` command from the Windows Command line or Mac Terminal.
 
 **PRO TIP:** If you're using **Visual Studio Code**, after opening the project, you can use <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd> to build your project without leaving VS Code.
 
