@@ -45,7 +45,7 @@ bridge run                  // Build and Run the index.html
 
 After successfully building your project, you should see a new **/dist** folder in your project root. These are the Bridge generated files, including your **index.html** file which can be opened in a browser, or just use the `bridge run` command from the Windows Command line or Mac Terminal.
 
-**PRO TIP:** If you're using **Visual Studio Code**, after opening the project, you can use <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd> to build your project without leaving VS Code.
+**PRO TIP:** If you're using **Visual Studio Code**, after opening the project you can use <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd> to build your project without leaving VS Code.
 
 ## Commands
 
