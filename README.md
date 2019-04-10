@@ -24,23 +24,23 @@ The following steps outline the commands for creating a new C# project using the
 #### Example (Windows Command Prompt)
 
 ```
-md Demo1                    // Create a new folder
-cd Demo1                    // Move into the folder
-bridge new                  // Create a new project
-code .                      // Open in Visual Studio Code
-bridge build                // Build the project, or
-bridge run                  // Build and Run the index.html
+md Demo1                // Create a new folder
+cd Demo1                // Move into the folder
+bridge new              // Create a new project
+code .                  // Open in Visual Studio Code
+bridge build            // Build the project, or
+bridge run              // Build and Run the index.html
 ```
 
 #### Example (Mac Terminal)
 
 ```
-mkdir Demo1                 // Create a new folder
-cd Demo1                    // Move into the folder
-bridge new                  // Create a new project
-code .                      // Open in Visual Studio Code
-bridge build                // Build the project, or
-bridge run                  // Build and Run the index.html
+mkdir Demo1             // Create a new folder
+cd Demo1                // Move into the folder
+bridge new              // Create a new project
+code .                  // Open in Visual Studio Code
+bridge build            // Build the project, or
+bridge run              // Build and Run the index.html
 ```
 
 After successfully building your project, you should see a new **/dist** folder in your project root. These are the Bridge generated files, including your **index.html** file which can be opened in a browser, or just use the `bridge run` command from the Windows Command line or Mac Terminal.
