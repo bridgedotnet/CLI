@@ -10,7 +10,9 @@
 ;!define Environ 'HKCU "Environment"'
 
 !ifndef Environ
-  !define Environ 'HKCU "Environment"'
+  !define RegistryRoot "HKCU"
+  !define RegistryPath "Environment"
+  !define Environ '${RegistryRoot} "${RegistryPath}"'
 !endif
 
 ; AddToPath - Appends dir to PATH
@@ -25,8 +27,17 @@ Function AddToPath
   Push $1
   Push $2
   Push $3
+  Push $4
 
-  ReadRegStr $1 ${Environ} "PATH"
+  ReadRegStr $1 ${Environ} "Path"
+  ReadRegStr $4 ${Environ} "Bridge_backup_path"
+  IfErrors 0 NoOverwrite
+    DetailPrint "Backing up original PATH value in key '${RegistryRoot}\${RegistryPath}\Bridge_backup_path'"
+    WriteRegExpandStr ${Environ} "Bridge_backup_path" $1
+    Goto AfterBkCheck
+  NoOverwrite:
+    DetailPrint "Key '${RegistryRoot}\${RegistryPath}\Bridge_backup_path' already exists. Not overwriting."
+  AfterBkCheck:
   Push "$1;"
   Push "$0;"
   Call StrStr
@@ -37,17 +48,17 @@ Function AddToPath
   Call StrStr
   Pop $2
   StrCmp $2 "" 0 done
-
-  DetailPrint "Add to PATH: $0"
+  DetailPrint "Adding to PATH: $0"
   StrCpy $2 $1 1 -1
   StrCmp $2 ";" 0 +2
     StrCpy $1 $1 -1 ; remove trailing ';'
   StrCmp $1 "" +2   ; no leading ';'
     StrCpy $0 "$1;$0"
-  WriteRegExpandStr ${Environ} "PATH" $0
+  WriteRegExpandStr ${Environ} "Path" $0
   SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
 
 done:
+  Pop $4
   Pop $3
   Pop $2
   Pop $1
@@ -69,7 +80,7 @@ Function un.RemoveFromPath
   Push $5
   Push $6
 
-  ReadRegStr $1 ${Environ} "PATH"
+  ReadRegStr $1 ${Environ} "Path"
   StrCpy $5 $1 1 -1
   StrCmp $5 ";" +2
     StrCpy $1 "$1;" ; ensure trailing ';'
@@ -88,7 +99,7 @@ Function un.RemoveFromPath
   StrCpy $5 $3 1 -1
   StrCmp $5 ";" 0 +2
     StrCpy $3 $3 -1 ; remove trailing ';'
-  WriteRegExpandStr ${Environ} "PATH" $3
+  WriteRegExpandStr ${Environ} "Path" $3
   SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
 
 done:
@@ -150,14 +161,32 @@ FunctionEnd
 Function un.DeleteDirIfEmpty
   FindFirst $R0 $R1 "$0\*.*"
   strcmp $R1 "." 0 NoDelete
-   FindNext $R0 $R1
-   strcmp $R1 ".." 0 NoDelete
-    ClearErrors
-    FindNext $R0 $R1
-    IfErrors 0 NoDelete
-     FindClose $R0
-     Sleep 1000
-     RMDir "$0"
+  FindNext $R0 $R1
+  strcmp $R1 ".." 0 NoDelete
+  ClearErrors
+  FindNext $R0 $R1
+  IfErrors 0 NoDelete
+    FindClose $R0
+    Sleep 1000
+    DetailPrint "Removed empty directory: $0"
+    RMDir "$0"
   NoDelete:
-   FindClose $R0
+  FindClose $R0
+FunctionEnd
+
+Function un.AskRemovePathBackup
+  ReadRegStr $R0 ${Environ} "Bridge_backup_path"
+  IfErrors NoBkKey
+    DetailPrint "Found backup registry key for PATH environment variable."
+    MessageBox MB_YESNO|MB_ICONQUESTION "Found backup Path environment variable registry key under:$\n$\n${RegistryRoot}\${RegistryPath}\Bridge_backup_path$\n$\nRemove it?" IDNO DontRemoveBkKey
+      DeleteRegValue ${Environ} "Bridge_backup_path"
+      SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
+      DetailPrint "Removed backup PATH key from the registry."
+      Goto done
+  NoBkKey:
+    DetailPrint "No PATH backup key from Bridge CLI in the registry."
+    Goto done
+  DontRemoveBkKey:
+    DetailPrint "Keeping backup PATH key from Bridge CLI in the registry."
+  done:
 FunctionEnd

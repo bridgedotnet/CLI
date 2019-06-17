@@ -27,11 +27,12 @@
 
   !if ${InstallScope} == "machine"
     !define RegistryRoot "HKLM"
-    !define Environ '${RegistryRoot} "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
+    !define RegistryPath "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"
   !else
     !define RegistryRoot "HKCU"
-    !define Environ '${RegistryRoot} "Environment"'
+    !define RegistryPath "Environment"
   !endif
+  !define Environ '${RegistryRoot} "${RegistryPath}"'
 
 ;--------------------------------
 ;NSIS Modern User Interface
@@ -100,6 +101,7 @@
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
 
+  !define MUI_FINISHPAGE_NOAUTOCLOSE
   !define MUI_FINISHPAGE_LINK "View ${ProductName} Readme"
   !define MUI_FINISHPAGE_LINK_LOCATION "${ProductReadmeURL}"
   !define MUI_FINISHPAGE_TITLE_3LINES
@@ -192,6 +194,7 @@ SectionEnd
 
 Section "Add to Path" AddToPath
 
+  DetailPrint "Adding '$INSTDIR' to PATH."
   Push "$INSTDIR"
   Call AddToPath
 
@@ -239,6 +242,8 @@ Section "Uninstall"
   ;after uninstallation.
   StrCpy $0 "$INSTDIR\.."
   Call un.DeleteDirIfEmpty
+
+  Call un.AskRemovePathBackup
 
   ReadRegDWORD $0 "${RegistryRoot}" "${BaseRegKey}" "AddedToPath"
   IfErrors done
